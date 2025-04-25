@@ -5,19 +5,13 @@ import {
 } from "lucide-react";
 
 const initialContacts = [
-  // ... contact list from the original code ...
   {
     name: "John Deo",
     email: "test@email.com",
     birthDate: "02/25/2018",
     phone: "1234567890",
     address: "God creature is sixth was abundantly and sea gathered i",
-    about: `Fowl darkness our sixth heaven. In image lights fourth a hath don't
-Abundantly they're, image you're . God creature is sixth was abundantly
-and sea gathered i the two let upon days.
-
-Very make fly saying light don't. Forth, replenish likeness.`,
-    notes: "Default note for John Deo",
+    notes: "Fowl darkness our sixth heaven. In image lights fourth a hath don't Abundantly they're, image you're . God creature is sixth was abundantly and sea gathered i the two let upon days.Very make fly saying light don't. Forth, replenish likeness.",
     avatar: "https://i.pravatar.cc/150?img=1",
   },
   {
@@ -26,8 +20,7 @@ Very make fly saying light don't. Forth, replenish likeness.`,
     birthDate: "04/14/1985",
     phone: "1234567890",
     address: "Celeste Slater 606-3727 Ullamcorper. Street Roseville NH 11523",
-    about: "Loves painting, yoga, and spontaneous road trips.",
-    notes: "Passionate about travel and photography.",
+    notes: "Passionate about travel and photography and Loves painting, yoga, and spontaneous road trips.",
     avatar: "https://i.pravatar.cc/150?img=2"
   },
     {
@@ -103,7 +96,7 @@ function Contacts() {
   const [editContactIndex, setEditContactIndex] = useState(null);
   const [editContact, setEditContact] = useState(null);
   const [newContact, setNewContact] = useState({
-    name: '', email: '', phone: '', birthDate: '', address: '', about: '', notes: '',
+    name: '', email: '', phone: '', birthDate: '', address: '', notes: '',
     avatar: 'https://i.pravatar.cc/150?img=11'
   });
 
@@ -118,7 +111,7 @@ function Contacts() {
   const handleAddContact = () => {
     if (!newContact.name || !newContact.email || !newContact.phone || !newContact.birthDate) return;
     setContacts(prev => [...prev, newContact]);
-    setNewContact({ name: '', email: '', phone: '', birthDate: '', address: '', about: '', notes: '', avatar: 'https://i.pravatar.cc/150?img=11' });
+    setNewContact({ name: '', email: '', phone: '', birthDate: '', address: '', notes: '', avatar: 'https://i.pravatar.cc/150?img=11' });
     setShowAddModal(false);
   };
 
@@ -144,9 +137,6 @@ function Contacts() {
       reader.readAsDataURL(file);
     }
   };
-
-    
-
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="bg-white shadow-md rounded-xl overflow-hidden">
@@ -173,77 +163,77 @@ function Contacts() {
             </button>
           </div>
         </div>
-        {/* ... rest of the code remains unchanged ... */}
- <table className="min-w-full table-fixed">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="w-6"></th>
-              <th className="text-left px-4 py-2 w-[16%]">Name</th>
-              <th className="text-left px-4 py-2 w-[20%]">Email</th>
-              <th className="text-left px-4 py-2 w-[14%]">Birth Date</th>
-              <th className="text-left px-4 py-2 w-[14%]">Mobile</th>
-              <th className="text-left px-4 py-2 w-[26%]">Address</th>
-              <th className="text-left px-4 py-2 w-[10%]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredContacts.map((contact, index) => (
-              <tr
-                key={index}
-                className="hover:bg-gray-100 cursor-pointer text-sm"
-                onClick={() => setSelectedContact(contact)}
-              >
-                <td className="px-2"><input type="checkbox" /></td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={contact.avatar}
-                      alt={contact.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <span className="font-medium">{contact.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-red-500">
-                    <Mail className="w-4 h-4" /> <span>{contact.email}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-gray-700">
-                    <Calendar className="w-4 h-4 text-gray-500" /> <span>{contact.birthDate}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Phone className="w-4 h-4" /> <span>{contact.phone}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-blue-500">
-                    <MapPin className="w-4 h-4" /> <span>{contact.address.substring(0, 40)}...</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-2">
-                    <Pencil
-                      className="w-4 h-4 text-purple-500 cursor-pointer"
-                      onClick={() => {
-                        setEditContactIndex(index);
-                        setEditContact(contact);
-                      }}
-                    />
-                    <Trash2
-                      className="w-4 h-4 text-orange-500 cursor-pointer"
-                      onClick={() => handleDelete(index)}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
+        <div className="overflow-x-auto">
+  <table className="min-w-full table-fixed">
+    <thead className="bg-gray-50">
+      <tr>
+        <th className="w-6"></th>
+        <th className="text-left px-4 py-2 w-[16%]">Name</th>
+        <th className="text-left px-4 py-2 w-[20%]">Email</th>
+        <th className="text-left px-4 py-2 w-[14%]">Birth Date</th>
+        <th className="text-left px-4 py-2 w-[14%]">Mobile</th>
+        <th className="text-left px-4 py-2 w-[26%]">Address</th>
+        <th className="text-left px-4 py-2 w-[10%]">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredContacts.map((contact, index) => (
+        <tr
+          key={index}
+          className="hover:bg-gray-100 cursor-pointer text-sm"
+          onClick={() => setSelectedContact(contact)}
+        >
+          <td className="px-2"><input type="checkbox" /></td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-3">
+              <img
+                src={contact.avatar}
+                alt={contact.name}
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="font-medium">{contact.name}</span>
+            </div>
+          </td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-1 text-red-500">
+              <Mail className="w-4 h-4" /> <span>{contact.email}</span>
+            </div>
+          </td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-1 text-gray-700">
+              <Calendar className="w-4 h-4 text-gray-500" /> <span>{contact.birthDate}</span>
+            </div>
+          </td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-1 text-green-600">
+              <Phone className="w-4 h-4" /> <span>{contact.phone}</span>
+            </div>
+          </td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-1 text-blue-500">
+              <MapPin className="w-4 h-4" /> <span>{contact.address.substring(0, 40)}...</span>
+            </div>
+          </td>
+          <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+            <div className="flex gap-2">
+              <Pencil
+                className="w-4 h-4 text-purple-500 cursor-pointer"
+                onClick={() => {
+                  setEditContactIndex(index);
+                  setEditContact(contact);
+                }}
+              />
+              <Trash2
+                className="w-4 h-4 text-orange-500 cursor-pointer"
+                onClick={() => handleDelete(index)}
+              />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
         <div className="p-4 border-t flex justify-between items-center">
           <span className="text-sm">
             Items per page: <select className="border rounded px-2 py-1 text-sm">
@@ -258,7 +248,7 @@ function Contacts() {
       {/* existing UI code... */}
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-4xl p-6 rounded-2xl shadow-xl overflow-y-auto max-h-[90vh] relative">
             <button className="absolute top-4 right-6 text-xl text-gray-500" onClick={() => setShowAddModal(false)}>✕</button>
             <div className="flex items-center gap-3 mb-6">
@@ -285,6 +275,7 @@ function Contacts() {
                 <textarea className="w-full border rounded-lg p-2" rows="2" placeholder="Address" value={newContact.address} onChange={e => setNewContact({ ...newContact, address: e.target.value })} />
               </div>
               {/* ... other input fields ... */}
+            
               <div className="col-span-2">
                 <textarea className="w-full border rounded-lg p-2" rows="2" placeholder="Note" value={newContact.notes} onChange={e => setNewContact({ ...newContact, notes: e.target.value })} />
               </div>
@@ -317,7 +308,7 @@ function Contacts() {
               <div className="flex items-center gap-2"><Phone className="w-4 h-4" /> {selectedContact.phone}</div>
               <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {selectedContact.birthDate}</div>
               <div className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {selectedContact.address}</div>
-              <div className="pt-2 border-t"><strong>About:</strong><p className="whitespace-pre-wrap mt-1">{selectedContact.about}</p></div>
+            
               <div className="pt-2 border-t"><strong>Notes:</strong><p className="whitespace-pre-wrap mt-1 text-yellow-700">{selectedContact.notes}</p></div>
             </div>
           </div>
@@ -338,6 +329,7 @@ function Contacts() {
               <input className="border rounded-lg p-2" placeholder="Phone*" value={editContact.phone} onChange={e => setEditContact({ ...editContact, phone: e.target.value })} />
               <input type="date" className="border rounded-lg p-2" value={editContact.birthDate} onChange={e => setEditContact({ ...editContact, birthDate: e.target.value })} />
               <textarea className="col-span-2 border rounded-lg p-2" rows="2" placeholder="Address" value={editContact.address} onChange={e => setEditContact({ ...editContact, address: e.target.value })} />
+              
               <textarea className="col-span-2 border rounded-lg p-2" rows="2" placeholder="Notes" value={editContact.notes} onChange={e => setEditContact({ ...editContact, notes: e.target.value })} />
               <div className="col-span-2 flex items-center gap-4">
                 <img src={editContact.avatar} alt="Avatar preview" className="w-12 h-12 rounded-full border" />

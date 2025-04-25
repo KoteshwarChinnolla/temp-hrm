@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
-import { MdDelete, MdOutlineFileDownload  } from "react-icons/md";
-import { FaRegPlusSquare } from "react-icons/fa";
 
-const HolidayDashboard = () => {
+const Holidays = () => {
   const [holidays, setHolidays] = useState([
     {
       name: "New Year",
@@ -19,6 +16,10 @@ const HolidayDashboard = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterYear, setFilterYear] = useState("All");
+  const [filterMonth, setFilterMonth] = useState("All");
+
   const [newHoliday, setNewHoliday] = useState({
     name: "",
     shift: "All Shifts",
@@ -29,9 +30,6 @@ const HolidayDashboard = () => {
     status: "Pending",
     details: "",
   });
-
-  const [filterYear, setFilterYear] = useState("All");
-  const [filterMonth, setFilterMonth] = useState("All");
 
   const handleAddClick = () => {
     setShowForm(true);
@@ -88,7 +86,8 @@ const HolidayDashboard = () => {
 
   const getYears = () => {
     const years = holidays.map(h => new Date(h.date).getFullYear());
-    return [...new Set(years)].sort((a, b) => b - a);
+    const uniqueYears = [...new Set(years)];
+    return uniqueYears.length ? uniqueYears.sort((a, b) => b - a) : ["All"];
   };
 
   const getMonths = () => {
@@ -102,16 +101,17 @@ const HolidayDashboard = () => {
     const holidayDate = new Date(h.date);
     const matchYear = filterYear === "All" || holidayDate.getFullYear().toString() === filterYear;
     const matchMonth = filterMonth === "All" || holidayDate.toLocaleString("default", { month: "long" }) === filterMonth;
-    return matchYear && matchMonth;
+    const matchSearch = h.name.toLowerCase().includes(searchTerm.toLowerCase()) || h.type.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchYear && matchMonth && matchSearch;
   });
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen font-sans">
-      <div className="text-3xl font-extrabold mb-6 text-gray-800">Holiday Manager</div>
+    <div className="p-6 md:p-8 bg-gray-100 min-h-screen font-sans">
+      <div className="text-2xl md:text-3xl font-extrabold mb-6 text-gray-800">Holiday Manager</div>
 
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-700">All Holidays</h2>
-        <div className="flex space-x-2">
+      {/* Filters and Search */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+        <div className="flex flex-wrap gap-2">
           <select
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
@@ -132,27 +132,37 @@ const HolidayDashboard = () => {
               <option key={idx} value={month}>{month}</option>
             ))}
           </select>
+          <input
+            type="text"
+            placeholder="Search by name/type..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded-md text-sm w-full md:w-auto"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={handleAddClick}
-            className="  px-3 py-2 rounded-xl shadow-md  transition-all"
+            className="bg-blue-600 text-white px-3 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-all"
           >
-            <FaRegPlusSquare />
+            ➕ Add Holiday
           </button>
           <button
             onClick={handleDownload}
-            className="  px-3 py-2 rounded-xl shadow-md  transition-all"
+            className="bg-green-600 text-white px-3 py-2 rounded-xl shadow-md hover:bg-green-700 transition-all"
           >
-            <MdOutlineFileDownload />
+            ⬇️ Download CSV
           </button>
         </div>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-md">
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-sm text-left min-w-[800px]">
           <thead className="bg-gray-200 text-gray-700 text-sm font-semibold">
             <tr>
               {["Holiday Name", "Shift", "Date", "Type", "Created By", "Creation Date", "Status", "Details", "Actions"].map((head, i) => (
-                <th key={i} className="px-5 py-3">{head}</th>
+                <th key={i} className="px-5 py-3 whitespace-nowrap">{head}</th>
               ))}
             </tr>
           </thead>
@@ -176,12 +186,10 @@ const HolidayDashboard = () => {
                     {h.status}
                   </span>
                 </td>
-                <td className="px-5 py-3">
-                  {h.details.length > 30 ? `${h.details.slice(0, 30)}...` : h.details}
-                </td>
+                <td className="px-5 py-3">{h.details.length > 30 ? `${h.details.slice(0, 30)}...` : h.details}</td>
                 <td className="px-5 py-3 space-x-2">
-                  <button onClick={() => handleEdit(i)} className="text-blue-600 hover:underline "><FiEdit className="w-5 h-5"/></button>
-                  <button onClick={() => handleRemove(i)} className="text-red-600 hover:underline"><MdDelete className="w-5 h-5"/></button>
+                  <button onClick={() => handleEdit(i)} className="text-blue-600 hover:underline">✏️</button>
+                  <button onClick={() => handleRemove(i)} className="text-red-600 hover:underline">🗑️</button>
                 </td>
               </tr>
             ))}
@@ -189,8 +197,9 @@ const HolidayDashboard = () => {
         </table>
       </div>
 
+      {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-6 rounded-2xl w-full max-w-lg shadow-2xl">
             <h3 className="text-2xl font-semibold mb-4 text-gray-900">
               {editIndex !== null ? "Edit Holiday" : "Add Holiday"}
@@ -267,4 +276,4 @@ const HolidayDashboard = () => {
   );
 };
 
-export default HolidayDashboard;
+export default Holidays;

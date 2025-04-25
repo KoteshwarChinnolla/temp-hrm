@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { FaEdit, FaTrash, FaPlus, FaSync, FaFileExcel } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 const EmployeeManagement = () => {
   const initialEmployees = [
+    // your employee list remains unchanged...
     {
       id: 1,
       name: "Manasa Sunkari",
@@ -123,8 +125,8 @@ const EmployeeManagement = () => {
       salary: "70000",
       lastPromotionDate: "2022-10-21",
     },
-    // Add more employee data here if needed
   ];
+
   const [employees, setEmployees] = useState(initialEmployees);
   const [searchTerm, setSearchTerm] = useState("");
   const [editEmployee, setEditEmployee] = useState(null);
@@ -146,7 +148,6 @@ const EmployeeManagement = () => {
       ...formData,
       image: imageFile ? URL.createObjectURL(imageFile) : formData.image,
     };
-
     setEmployees((prev) =>
       prev.map((emp) => (emp.id === formData.id ? updatedFormData : emp))
     );
@@ -200,19 +201,21 @@ const EmployeeManagement = () => {
   );
 
   return (
-    <div className="min-h-screen bg-blue-50 p-6">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-center mb-6">All Employees</h1>
+    <div className="min-h-screen bg-blue-50 p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-4 sm:p-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">
+          All Employees
+        </h1>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <input
             type="text"
-            placeholder="Search🔍"
+            placeholder="Search 🔍"
             className="border p-2 rounded w-full sm:w-1/3"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
             <button
               onClick={handleAdd}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-1"
@@ -234,12 +237,13 @@ const EmployeeManagement = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {/* Updated Grid for Responsive Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredEmployees.length ? (
             filteredEmployees.map((emp) => (
               <div
                 key={emp.id}
-                className="bg-white border rounded-lg shadow p-4 text-center"
+                className="bg-white border rounded-lg shadow-lg p-4 text-center flex flex-col items-center"
               >
                 <img
                   src={emp.image || "https://via.placeholder.com/150"}
@@ -249,12 +253,18 @@ const EmployeeManagement = () => {
                 <h3 className="text-lg font-semibold">{emp.name}</h3>
                 <p className="text-sm text-gray-500">{emp.role}</p>
                 <p className="text-xs text-gray-400 mb-2">{emp.department}</p>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 w-full text-left">
                   <p><strong>Mobile:</strong> {emp.mobile}</p>
-                  <p><strong>Email:</strong> {emp.email}</p>
+                  <p><strong>Email:</strong> <span className="break-words">{emp.email}</span></p>
                 </div>
                 <div className="flex justify-center flex-wrap gap-2 mt-3">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${emp.gender === "Female" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"}`}>{emp.gender}</span>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      emp.gender === "Female" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {emp.gender}
+                  </span>
                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">{emp.status}</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">{emp.location}</span>
                 </div>
@@ -279,10 +289,13 @@ const EmployeeManagement = () => {
           )}
         </div>
 
+        {/* Modal for Editing and Adding Employees */}
         {(isModalOpen || isAddModalOpen) && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-xl">
-              <h2 className="text-xl font-bold mb-4">{isAddModalOpen ? "Add" : "Edit"} Employee</h2>
+            <div className="bg-white p-6 rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+              <h2 className="text-xl font-bold mb-4">
+                {isAddModalOpen ? "Add" : "Edit"} Employee
+              </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium">Image</label>
@@ -293,7 +306,8 @@ const EmployeeManagement = () => {
                     className="w-full"
                   />
                 </div>
-                {[{ name: "name", label: "Name" },
+                {[
+                  { name: "name", label: "Name" },
                   { name: "role", label: "Role" },
                   { name: "department", label: "Department" },
                   { name: "mobile", label: "Mobile" },
@@ -353,50 +367,23 @@ const EmployeeManagement = () => {
                     dateFormat="yyyy-MM-dd"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium">Status</label>
-                  <select
-                    name="status"
-                    value={formData.status || ""}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="border px-3 py-2 rounded w-full"
+                <div className="mt-4 flex justify-between">
+                  <button
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setIsAddModalOpen(false);
+                    }}
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                   >
-                    <option value="">Select</option>
-                    <option>Active</option>
-                    <option>Inactive</option>
-                    <option>On Leave</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Location</label>
-                  <select
-                    name="location"
-                    value={formData.location || ""}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="border px-3 py-2 rounded w-full"
+                    Cancel
+                  </button>
+                  <button
+                    onClick={isAddModalOpen ? handleAddEmployee : handleSave}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
                   >
-                    <option value="">Select</option>
-                    <option>Office</option>
-                    <option>Home</option>
-                  </select>
+                    {isAddModalOpen ? "Add" : "Save"}
+                  </button>
                 </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-6">
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                  onClick={isAddModalOpen ? handleAddEmployee : handleSave}
-                >
-                  {isAddModalOpen ? "Add" : "Save"}
-                </button>
-                <button
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                  onClick={() => {
-                    setIsAddModalOpen(false);
-                    setIsModalOpen(false);
-                  }}
-                >
-                  Cancel
-                </button>
               </div>
             </div>
           </div>

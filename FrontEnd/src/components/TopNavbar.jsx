@@ -1,66 +1,53 @@
 import React, { useState } from "react";
-import { Maximize, Minimize } from "lucide-react"; // Icons
-import Flag from "react-world-flags"; // Flag component
-import img1 from "../assets/logo.png"; // Logo image
-import img from "../assets/profile.png"; // Profile image
+import { Maximize, Minimize } from "lucide-react";
+import Flag from "react-world-flags";
+import img1 from "../assets/logo.png";
+import img from "../assets/profile.png";
 
 const TopNavbar = ({ isExpanded, setIsExpanded }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Function to toggle fullscreen mode
   const toggleFullscreen = () => {
     if (isFullscreen) {
-      // Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.mozCancelFullscreen) {
-        document.mozCancelFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+      document.exitFullscreen?.() ||
+        document.webkitExitFullscreen?.() ||
+        document.mozCancelFullscreen?.() ||
+        document.msExitFullscreen?.();
     } else {
-      // Enter fullscreen
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen();
-      } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
-      }
+      document.documentElement.requestFullscreen?.() ||
+        document.documentElement.webkitRequestFullscreen?.() ||
+        document.documentElement.mozRequestFullScreen?.() ||
+        document.documentElement.msRequestFullscreen?.();
     }
-
-    // Toggle fullscreen state
     setIsFullscreen(!isFullscreen);
   };
 
   return (
-    <nav className="bg-white flex justify-between items-center text-black p-3 w-full">
-      {/* Left section: Logo and Menu Toggle */}
+    <nav className="bg-white shadow-md px-4 py-3 w-full flex items-center justify-between flex-wrap">
+      {/* Left section: Logo & sidebar toggle */}
       <div className="flex items-center gap-4">
         <a href="/dashboard">
-          <img src={img1} className="w-10" alt="Logo" />
+          <img src={img1} className="w-10 sm:w-12" alt="Logo" />
         </a>
+
         <button
-          onClick={() => setIsExpanded(!isExpanded)} // Toggle sidebar state
+          onClick={() => setIsExpanded(!isExpanded)}
           className="text-black focus:outline-none"
         >
           <div className="space-y-1">
-            <div className="w-6 h-0.5 bg-black rounded" />
-            <div className="w-6 h-0.5 bg-black rounded" />
-            <div className="w-6 h-0.5 bg-black rounded" />
+            <div className="w-5 h-0.5 bg-black rounded" />
+            <div className="w-5 h-0.5 bg-black rounded" />
+            <div className="w-5 h-0.5 bg-black rounded" />
           </div>
         </button>
       </div>
 
-      {/* Right section: Fullscreen toggle, Flag and Profile */}
-      <div className="flex items-center gap-4">
+      {/* Right section: Fullscreen, Flag, Profile */}
+      <div className="flex items-center gap-4 mt-3 sm:mt-0">
         <button onClick={toggleFullscreen} className="text-black">
           {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
         </button>
+
         <Flag
           code="us"
           style={{
@@ -69,9 +56,9 @@ const TopNavbar = ({ isExpanded, setIsExpanded }) => {
             borderRadius: "4px",
           }}
         />
-        <button className="flex items-center text-black p-2 hover:bg-gray-200  hover:border-0 rounded-2xl">
-         
-          <img src={img} className="w-10" alt="" />
+
+        <button className="flex items-center text-black p-2 hover:bg-gray-200 rounded-full">
+          <img src={img} className="w-9 sm:w-10 rounded-full" alt="Profile" />
         </button>
       </div>
     </nav>

@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import {
-    FaEdit,
-    FaTrash,
-    FaDownload,
     FaSearch,
-    FaFilter,
     FaEnvelope,
-    FaPlus,
-    FaFileCsv,
 } from "react-icons/fa";
 import anasolLogo from "../assets/Anasol_logo11.png";
-
+import { IoFilterOutline, IoAddCircleOutline } from "react-icons/io5";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FiEdit, FiDownload  } from "react-icons/fi";
 const initialPayrollData = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
     employee: [
@@ -47,6 +44,13 @@ const initialPayrollData = Array.from({ length: 20 }, (_, i) => ({
         "Marketing", "Operations", "Human Resources", "Finance", "Technology Services",
         "Marketing", "Technology Services", "Operations", "Finance", "Technology Services"
     ][i],
+    designation: [
+        "Software Engineer", "Accountant", "Developer", "Operations Executive", "HR Manager",
+        "Senior Developer", "Marketing Analyst", "UI Designer", "Financial Analyst", "Tech Lead",
+        "Content Strategist", "Ops Manager", "HR Executive", "Finance Manager", "Backend Developer",
+        "SEO Specialist", "Frontend Engineer", "Logistics Coordinator", "Auditor", "QA Engineer"
+    ][i],
+    gender: ["Male", "Female", "Male", "Male", "Female", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female"][i],
     email: [
         "john.doe", "priya.mehta", "ankit.sharma", "ravi.kumar", "neha.reddy",
         "simran.kapoor", "rahul.singh", "divya.jain", "karan.patel", "sneha.desai",
@@ -60,8 +64,18 @@ const initialPayrollData = Array.from({ length: 20 }, (_, i) => ({
         "05-Apr-2025", "-", "06-Apr-2025", "-", "03-Apr-2025",
         "-", "05-Apr-2025", "04-Apr-2025", "-", "06-Apr-2025"
     ][i],
+    panNo: `ABCDE${1000 + i}F`,
+    pfNo: `PF${2000 + i}`,
+    bankAccountNo: `1234567890${i}`,
+    bankAccountName: [
+        "John Doe", "Priya Mehta", "Ankit Sharma", "Ravi Kumar", "Neha Reddy",
+        "Simran Kapoor", "Rahul Singh", "Divya Jain", "Karan Patel", "Sneha Desai",
+        "Arjun Nair", "Meera Iyer", "Vikram Rao", "Tanya Bose", "Deepak Verma",
+        "Roshni Shah", "Amit Tiwari", "Zoya Khan", "Farhan Sheikh", "Pooja Joshi"
+    ][i],
+    ifscCode: `ANSL000${100 + i}`,
+    phoneNo: `98765432${String(i).padStart(2, '0')}`
 }));
-
 const Payroll = () => {
     const [payrollData, setPayrollData] = useState(initialPayrollData);
     const [searchTerm, setSearchTerm] = useState("");
@@ -154,23 +168,29 @@ const Payroll = () => {
 
     const handleDownloadCSV = () => {
         const headers = columns
-            .filter((col) => visibleColumns[col.key])
+            .filter((col) => visibleColumns[col.key] && col.key !== "actions")
             .map((col) => col.label);
+    
         const csvContent = [
-            headers.join(","),
+            headers.join(","), // First row with headers
             ...payrollData.map((item) =>
                 columns
-                    .filter((col) => visibleColumns[col.key])
-                    .map((col) => (col.key === "actions" ? "" : "${item[col.key]}"))
+                    .filter((col) => visibleColumns[col.key] && col.key !== "actions")
+                    .map((col) => {
+                        const cell = item[col.key] ?? "";
+                        return `"${String(cell).replace(/"/g, '""')}"`; // handle commas & quotes
+                    })
                     .join(",")
             ),
         ].join("\n");
+    
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "payroll_data.csv";
         link.click();
     };
+    
     const handlePayslipDownload = (item) => {
         const doc = new jsPDF({
             orientation: "landscape",
@@ -224,8 +244,8 @@ const Payroll = () => {
             // Define column positions
             const leftCol = leftMargin;
             const midCol = pageWidth / 2;
-            const labelWidth = 45; // Increased from 35
-            const valueWidth = pageWidth / 2 - labelWidth - 15; // Adjusted to use half page width
+            const labelWidth = 45;
+            const valueWidth = pageWidth / 2 - labelWidth - 15;
 
             // Section Title
             doc.setFontSize(10);
@@ -253,21 +273,23 @@ const Payroll = () => {
 
             // Employee details with improved styling
             const leftDetails = [
-                { label: "Employee Name", value: "John Doe" },
-                { label: "Employee ID", value: "1001" },
-                { label: "Designation", value: "Technology Services" },
-                { label: "Gender", value: "Male" },
-                { label: "Phone no", value: "7877565446" },
-                { label: "Grade", value: "B2" },
+                { label: "Employee Name", value: item.employee },
+                { label: "Employee ID", value: item.empid },
+                { label: "Designation", value: item.designation },
+                { label: "Department", value: item.department },
+                { label: "Phone No", value: item.phoneNo },
+                { label: "Bank A/C Name", value: item.bankAccountName },
+                { label: "Bank A/C No", value: item.bankAccountNo },
             ];
 
             const rightDetails = [
-                { label: "Bank A/c Name:", value: "Mahindra Bank" },
-                { label: "Bank A/C No", value: "86786757876278557" },
-                { label: "PF no", value: "87896565877" },
-                { label: "PF UAN", value: "101896743020" },
-                { label: "PAN NO", value: "7896854547687" },
-                
+                { label: "Gender", value: item.gender },
+                { label: "PAN No", value: item.panNo },
+                { label: "PF No", value: item.pfNo },
+                { label: "IFSC Code", value: item.ifscCode },
+                { label: "Email", value: item.email },
+                { label: "Month", value: item.month },
+                { label: "Status", value: item.status },
             ];
 
             let currentY = startY;
@@ -312,7 +334,6 @@ const Payroll = () => {
             const daysCellWidth = tableWidth / daysInfo.length;
             daysInfo.forEach((info, index) => {
                 const x = leftMargin + daysCellWidth * index;
-                // Remove the background fill for all cells
                 doc.roundedRect(x, currentY, daysCellWidth - 1, 12, 1, 1);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(80, 80, 80);
@@ -334,8 +355,8 @@ const Payroll = () => {
             doc.text("Salary Details", leftMargin, currentY - 5);
 
             // Adjust the width ratio for earnings and deductions
-            const earningsWidth = tableWidth * 0.75; // Reduced from 0.85
-            const deductionsWidth = tableWidth * 0.25; // Increased from 0.15
+            const earningsWidth = tableWidth * 0.75;
+            const deductionsWidth = tableWidth * 0.25;
 
             // Headers with modern styling
             doc.setFillColor(0, 32, 96);
@@ -391,14 +412,66 @@ const Payroll = () => {
             // Data rows with modern styling
             currentY += 10;
             const rowHeight = 7;
+
+            // Calculate earnings based on salary
+            const basicSalary = parseFloat(item.salary.replace(/[^0-9.-]+/g, ""));
+            const hra = Math.round(basicSalary * 0.4);
+            const personalAllowance = Math.round(basicSalary * 0.2);
+            const remoteAllowance = 3000;
+            const booksAllowance = 3000;
+            const professionalAllowance = 15000;
+            const conveyanceAllowance = 2734;
+
             const earnings = [
-                {desc: "BASIC",rate: "34,673",current: "34,673",arrear: "0",total: "34,673",},
-                {desc: "HOUSE RENT ALLOWANCE",rate: "20,804",current: "20,804",arrear: "0",total: "20,804",},
-                {desc: "PERSONAL ALLOWANCE",rate: "14,026",current: "14,026",arrear: "0",total: "14,026",},
-                {desc: "REMOTE WORKING ALLOWANCE",rate: "3,000",current: "3,000",arrear: "0",total: "3,000",},
-                {desc: "BOOKS AND JOURNALS",rate: "3,000",current: "3,000",arrear: "0",total: "3,000",},
-                {desc: "PROFESSIONAL PURSUIT",rate: "15,000",current: "15,000",arrear: "0",total: "15,000",},
-                {desc: "CONVEYANCE ALLOWANCE",rate: "2,734",current: "2,734",arrear: "0",total: "2,734",},
+                {
+                    desc: "BASIC",
+                    rate: basicSalary.toLocaleString("en-IN"),
+                    current: basicSalary.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: basicSalary.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "HOUSE RENT ALLOWANCE",
+                    rate: hra.toLocaleString("en-IN"),
+                    current: hra.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: hra.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "PERSONAL ALLOWANCE",
+                    rate: personalAllowance.toLocaleString("en-IN"),
+                    current: personalAllowance.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: personalAllowance.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "REMOTE WORKING ALLOWANCE",
+                    rate: remoteAllowance.toLocaleString("en-IN"),
+                    current: remoteAllowance.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: remoteAllowance.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "BOOKS AND JOURNALS",
+                    rate: booksAllowance.toLocaleString("en-IN"),
+                    current: booksAllowance.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: booksAllowance.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "PROFESSIONAL PURSUIT",
+                    rate: professionalAllowance.toLocaleString("en-IN"),
+                    current: professionalAllowance.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: professionalAllowance.toLocaleString("en-IN"),
+                },
+                {
+                    desc: "CONVEYANCE ALLOWANCE",
+                    rate: conveyanceAllowance.toLocaleString("en-IN"),
+                    current: conveyanceAllowance.toLocaleString("en-IN"),
+                    arrear: "0",
+                    total: conveyanceAllowance.toLocaleString("en-IN"),
+                },
             ];
 
             const deductions = [
@@ -508,7 +581,7 @@ const Payroll = () => {
                 "#1016, 11th Floor, DSL Abacus IT Park, Uppal Hyderabad-500039 | Ph: 9032091726";
             doc.text(address, pageWidth / 2, pageHeight - 7, { align: "center" });
 
-            doc.save(`${item.employee}_Salary_Slip.pdf`);
+            doc.save(`${ item.employee }_Salary_Slip.pdf`);
         };
     };
 
@@ -535,28 +608,28 @@ const Payroll = () => {
                 Payroll Dashboard
             </h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-red-100 p-4 rounded-lg shadow text-center">
-                    <h2 className="text-sm text-gray-500">Total Employees</h2>
+                <div className="bg-white p-4 rounded-lg shadow text-center">
+                    <h2 className="text-sm text-black">Total Employees</h2>
                     <p className="text-xl font-bold">{filteredData.length}</p>
                 </div>
-                <div className="bg-green-100 p-4 rounded-lg shadow text-center">
-                    <h2 className="text-sm text-green-700">Paid</h2>
-                    <p className="text-xl font-bold text-green-700">{totalPaid}</p>
+                <div className="bg-white p-4 rounded-lg shadow text-center">
+                    <h2 className="text-sm text-black">Paid</h2>
+                    <p className="text-xl font-bold text-black">{totalPaid}</p>
                 </div>
-                <div className="bg-yellow-100 p-4 rounded-lg shadow text-center">
-                    <h2 className="text-sm text-yellow-700">Pending</h2>
-                    <p className="text-xl font-bold text-yellow-700">{totalPending}</p>
+                <div className="bg-white p-4 rounded-lg shadow text-center">
+                    <h2 className="text-sm text-black">Pending</h2>
+                    <p className="text-xl font-bold text-black">{totalPending}</p>
                 </div>
-                <div className="bg-indigo-100 p-4 rounded-lg shadow text-center">
-                    <h2 className="text-sm text-indigo-700">Current Month</h2>
-                    <p className="text-xl font-bold text-indigo-700">March 2025</p>
+                <div className="bg-white p-4 rounded-lg shadow text-center">
+                    <h2 className="text-sm text-black">Current Month</h2>
+                    <p className="text-xl font-bold text-black">March 2025</p>
                 </div>
             </div>
 
             <div className="bg-white border shadow rounded-lg p-4 mb-6 mx-4">
                 <div className="flex items-center justify-between mb-4">
+                    {/* <h4>Payroll</h4> */}
                     <div className="bg-gray-50 border border-gray-200 rounded-md p-3 w-full md:w-80">
-                        
                         <div className="flex items-center">
                             <FaSearch className="text-gray-400 mr-2" />
                             <input
@@ -575,10 +648,10 @@ const Payroll = () => {
                         <div className="relative">
                             <button
                                 onClick={() => setShowColumnDropdown(!showColumnDropdown)}
-                                className="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-full transition-colors"
+                                className="p-2 text-black hover:text-gray-300 hover:bg-gray-300 rounded-full transition-colors"
                                 title="Column Settings"
                             >
-                                <FaFilter className="text-xl" />
+                                <IoFilterOutline  className="text-xl" />
                             </button>
                             {showColumnDropdown && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
@@ -603,17 +676,17 @@ const Payroll = () => {
                         </div>
                         <button
                             onClick={() => setAddModal(true)}
-                            className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-full transition-colors"
+                            className="p-2 text-green- hover:text-green-800 hover:bg-gray-300 rounded-full transition-colors"
                             title="Add Employee"
                         >
-                            <FaPlus className="text-xl" />
+                            <IoAddCircleOutline className="text-xl" />
                         </button>
                         <button
                             onClick={handleDownloadCSV}
                             className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors"
                             title="Download CSV"
                         >
-                            <FaFileCsv className="text-xl" />
+                            <MdOutlineFileDownload className="text-xl" />
                         </button>
                     </div>
                 </div>
@@ -650,33 +723,40 @@ const Payroll = () => {
                                                                 className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-full transition-colors"
                                                                 onClick={() => handlePayslipDownload(item)}
                                                                 title="Download Payslip"
-                                                            ><FaDownload />
+                                                            >
+                                                                <FiDownload className="text-xl" />
                                                             </button>
                                                             <button
                                                                 className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors"
                                                                 onClick={() => handleEdit(item)}
                                                                 title="Edit"
-                                                            ><FaEdit />
+                                                            >
+                                                                <FiEdit className="text-xl"/>
                                                             </button>
                                                             <button
                                                                 className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-full transition-colors"
                                                                 onClick={() => handleDelete(item)}
                                                                 title="Delete"
-                                                            > <FaTrash />
+                                                            >
+                                                                <FaRegTrashAlt className="text-xl" />
                                                             </button>
                                                         </div>
                                                     ) : column.key === "status" ? (
                                                         <span
                                                             className={`px-2 py-1 rounded-full text-sm font-semibold ${item.status === "Paid"
-                                                                ? "bg-green-100 text-green-700"
-                                                                : "bg-yellow-100 text-yellow-700"
+                                                                    ? "bg-green-100 text-green-700"
+                                                                    : "bg-yellow-100 text-yellow-700"
                                                                 }`}
                                                         >
                                                             {item[column.key]}
                                                         </span>
                                                     ) : (
-                                                        item[column.key])}
-                                                </td> ))} </tr>
+                                                        item[column.key]
+                                                    )}
+                                                </td>
+                                            )
+                                    )}
+                                </tr>
                             ))}
                         </tbody>
                     </table>
@@ -708,7 +788,14 @@ const Payroll = () => {
                     <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
                         <h2 className="text-xl font-semibold mb-4">Add New Employee</h2>
                         <div className="space-y-3">
-                            {[ "employee","empid", "email","department","salary","bonus","deductions",
+                            {[
+                                "employee",
+                                "empid",
+                                "email",
+                                "department",
+                                "salary",
+                                "bonus",
+                                "deductions",
                             ].map((field) => (
                                 <input
                                     key={field}
@@ -829,26 +916,56 @@ const Payroll = () => {
                             className="w-full border p-2 rounded mb-3"
                             placeholder="Salary"
                         />
-                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                            className="w-full border p-2 rounded mb-3">
+                        <select
+                            value={editForm.status}
+                            onChange={(e) =>
+                                setEditForm({ ...editForm, status: e.target.value })
+                            }
+                            className="w-full border p-2 rounded mb-3"
+                        >
                             <option value="Paid">Paid</option>
                             <option value="Pending">Pending</option>
                         </select>
                         <div className="flex justify-end gap-3">
-                            <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
-                            <button onClick={() => setEditModal(null)}className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+                            <button
+                                onClick={handleSave}
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            >
+                                Save
+                            </button>
+                            <button
+                                onClick={() => setEditModal(null)}
+                                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
+
             {confirmDelete && (
                 <div className="fixed inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
-                        <h2 className="text-lg font-semibold mb-4">Delete {confirmDelete.employee}?</h2>
-                        <p className="mb-6">Are you sure you want to remove this payroll record?</p>
+                        <h2 className="text-lg font-semibold mb-4">
+                            Delete {confirmDelete.employee}?
+                        </h2>
+                        <p className="mb-6">
+                            Are you sure you want to remove this payroll record?
+                        </p>
                         <div className="flex justify-center gap-4">
-                            <button onClick={confirmDeleteEmployee} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"> Delete</button>
-                            <button onClick={cancelDelete} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"> Cancel</button>
+                            <button
+                                onClick={confirmDeleteEmployee}
+                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={cancelDelete}
+                                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -856,4 +973,5 @@ const Payroll = () => {
         </div>
     );
 };
+
 export default Payroll;

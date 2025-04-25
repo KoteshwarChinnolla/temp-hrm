@@ -12,13 +12,11 @@ import AttendanceSheet from "./Components/AttendenceSheet";
 import AttendancePage from "./Components/AttendancePage";
 import LeadersPage from "./components/LeadersPage";
 import Projects from "./Components/Projects";
-import AddProject from "./Components/AddProject";
-import EstimatesTable from "./Components/EstimatesTable";
+import AddProjects from "./components/AddProjects";
+
 import ProjectDetails from "./Components/ProjectDetails";
-import AddEmployee from "./Components/AddEmployee";
 import EmployeeManagement from "./Components/EmployeeManagement";
 import Edit from "./Components/Edit";
-import ShiftTable from "./Components/ShiftTable";
 import Calendar from "./Components/Calender";
 import Contacts from "./components/Contacts";
 import Dashboard from "./components/Dashboard";
@@ -74,15 +72,14 @@ export default function App() {
                     <Route path="/tasks" element={<Tasks />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/chat" element={<Chats />} />
-                    <Route path="/contacts" element={<Contact />} />
+                    <Route path="/contacts" element={<Contacts/>} />
                     <Route path="/calendar" element={<Calender />} />
                     <Route path="/Adminattendance" element={<TodayAttendence />} />
                     <Route path="/attendance/sheet" element={<AttendanceSheet />} />
                     <Route path="/leaders" element={<LeadersPage />} />
                     <Route path="/projects" element={<Projects />} />
-                    <Route path="/projects/allprojects" element={<Projects />} />
-                    <Route path="/projects/add" element={<AddProject />} />
-                    <Route path="/projects/estimate" element={<EstimatesTable />} />
+                    <Route path="/projects/add" element={<AddProjects />} />
+                  
                     <Route path="/project/details" element={<ProjectDetails />} />
                     <Route path="/employees/all" element={<EmployeeManagement />} />
                     <Route path="/calender" element={<Calendar />} />

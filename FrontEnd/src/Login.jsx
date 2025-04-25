@@ -37,10 +37,7 @@ const Login = ({ setRole }) => {
       <div className="absolute top-6 left-6 flex items-center space-x-3 ps-25">
         <img src={logo} alt="Anasol Logo" className="w-40 h-auto" />
         <div className="text-left">
-      <h1 className="text-xl font-bold text-blacktracking-wide mb-1">ANASOL</h1>
-       <p className="text-xl font-bold text-black tracking-wide mb-1">CONSULTANCY</p>
-       <p className="text-xl font-bold text-black tracking-wide mb-1">SERVICES</p>
-       <p className="text-xl font-bold text-black tracking-wide mb-1">SINCE 2016</p>
+     
       </div>
 
       </div>
@@ -78,7 +75,7 @@ const Login = ({ setRole }) => {
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700">User</label>
             <input
               type="text"
               value={name}

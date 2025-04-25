@@ -92,6 +92,7 @@ const initialContacts = [
     project: 'Vagitable shop app',
     image: 'https://i.pravatar.cc/150?img=9'
   },
+  // ... (your contacts array remains the same)
 ];
 
 export default function LeadersPage() {
@@ -250,7 +251,7 @@ export default function LeadersPage() {
                 <p className="text-sm text-gray-500">Fill out the details below.</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <input type="text" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400" />
               <input type="text" placeholder="Department" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400" />
               <input type="text" placeholder="Role" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400" />
