@@ -1,252 +1,251 @@
-import React, { useState } from "react";
-import { FaDownload, FaArrowLeft, FaArrowRight,FaHome  } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import {
+  FaDownload,
+  FaArrowLeft,
+  FaArrowRight,
+  FaHome,
+  FaSearch,
+} from "react-icons/fa";
+import { FcPlus } from "react-icons/fc";
+import { SlRefresh } from "react-icons/sl";
 
 const Project = () => {
-  const projectData = [
+  const defaultData = [
     {
-      id: 258,
-      projectTitle: "Android Application Development",
-      clientName: "Cara Stevens",
-      startDate: "05/10/2024",
-      endDate: "07/25/2024",
-      deadline: "08/25/2024",
-      noOfMembers: 3,
+      id: 1,
+      name: "Hospital Admin",
+      teamLead: "Keerthana",
+      team: "Keerthana, John Deo",
       priority: "High",
-      progress: 80,
-      status: "Active",
-      members: [{}, {}, {}], // Representing member avatars
+      startDate: "2024-05-04",
+      deadline: "2024-07-10",
+      status: "Ongoing",
     },
     {
-      id: 578,
-      projectTitle: "PHP Website Redesign",
-      clientName: "Sarah Smith",
-      startDate: "02/22/2024",
-      endDate: "04/12/2024",
-      deadline: "05/10/2024",
-      noOfMembers: 2,
-      priority: "Low",
-      progress: 30,
-      status: "Deactive",
-      members: [{}, {}],
-    },
-    {
-      id: 267,
-      projectTitle: "Logo Design for Startup",
-      clientName: "John Deo",
-      startDate: "01/05/2024",
-      endDate: "03/15/2024",
-      deadline: "04/24/2024",
-      noOfMembers: 3,
-      priority: "High",
-      progress: 70,
-      status: "Active",
-      members: [{}, {}, {}],
-    },
-    {
-      id: 114,
-      projectTitle: "Chat iOS Application",
-      clientName: "Pooja Sharma",
-      startDate: "05/17/2024",
-      endDate: "08/11/2024",
-      deadline: "09/13/2024",
-      noOfMembers: 2,
+      id: 2,
+      name: "Job Portal",
+      teamLead: "John Deo",
+      team: "John Deo, Sarah",
       priority: "Medium",
-      progress: 50,
-      status: "Active",
-      members: [{}, {}],
-    },
-    {
-      id: 109,
-      projectTitle: "Nursery School Website",
-      clientName: "Ashton Cox",
-      startDate: "04/19/2024",
-      endDate: "06/28/2024",
-      deadline: "06/30/2024",
-      noOfMembers: 1,
-      priority: "High",
-      progress: 20,
-      status: "Deactive",
-      members: [{}]
-    },
-    {
-      id: 367,
-      projectTitle: "Html static template",
-      clientName: "Sarah Smith",
-      startDate: "05/10/2024",
-      endDate: "06/17/2024",
-      deadline: "06/24/2024",
-      noOfMembers: 2,
-      priority: "Medium",
-      progress: 40,
-      status: "Deactive",
-      members: [{}, {}],
-    },
-    {
-      id: 865,
-      projectTitle: "Accounting Software UI",
-      clientName: "Pooja Sharma",
-      startDate: "05/19/2024",
-      endDate: "06/20/2024",
-      deadline: "07/01/2024",
-      noOfMembers: 3,
-      priority: "Low",
-      progress: 90,
-      status: "Active",
-      members: [{}, {}, {}],
+      startDate: "2024-02-01",
+      deadline: "2024-04-05",
+      status: "Completed",
     },
   ];
 
-  const priorityColors = {
-    High: "bg-red-100 text-red-700",
-    Medium: "bg-yellow-100 text-yellow-700",
-    Low: "bg-green-100 text-green-700",
-  };
-
-  const statusColors = {
-    Active: "bg-green-100 text-green-700",
-    Deactive: "bg-red-100 text-red-700",
-  };
-
-  // Pagination state
+  const [projectsData, setProjectsData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10 as seen in the image
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [showModal, setShowModal] = useState(false);
+  const [newProject, setNewProject] = useState({
+    name: "",
+    teamLead: "",
+    team: "",
+    priority: "Low",
+    startDate: "",
+    deadline: "",
+    status: "Ongoing",
+  });
 
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(projectData.length / itemsPerPage);
+  useEffect(() => {
+    const stored = localStorage.getItem("projectsData");
+    if (stored) {
+      setProjectsData(JSON.parse(stored));
+    } else {
+      setProjectsData(defaultData);
+    }
+  }, []);
 
-  // Get the items for the current page
-  const currentItems = projectData.slice(
+  const saveToStorage = (data) => {
+    localStorage.setItem("projectsData", JSON.stringify(data));
+  };
+
+  const filteredProjects = projectsData.filter((project) => {
+    const searchableString = Object.values(project).join(" ").toLowerCase();
+    return searchableString.includes(searchTerm.toLowerCase());
+  });
+
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const currentItems = filteredProjects.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Handlers for pagination buttons
-  const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  const getPriorityClass = (priority) => {
+    const colors = {
+      High: "bg-red-100 text-red-700",
+      Medium: "bg-yellow-100 text-yellow-700",
+      Low: "bg-green-100 text-green-700",
+    };
+    return `rounded-full px-2 py-1 text-xs inline-block ${colors[priority]}`;
   };
 
-  const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  const getStatusClass = (status) => {
+    const colors = {
+      Ongoing: "bg-blue-100 text-blue-700",
+      Completed: "bg-green-100 text-green-700",
+      "On Hold": "bg-yellow-100 text-yellow-700",
+    };
+    return `rounded-full px-2 py-1 text-xs inline-block ${colors[status]}`;
   };
 
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to the first page when items per page changes
+  const isValidName = (text) => /^[A-Za-z\s]{2,}$/.test(text.trim());
+  const isValidTeam = (teamString) => {
+    const members = teamString.split(",").map((m) => m.trim());
+    return members.every((name) => /^[A-Za-z\s]{2,}$/.test(name));
+  };
+
+  const handleAddProject = () => {
+    const { name, teamLead, team, startDate, deadline } = newProject;
+
+    if (!isValidName(name)) {
+      alert("Project name must have at least 2 letters and only letters/spaces.");
+      return;
+    }
+    if (!isValidName(teamLead)) {
+      alert("Team lead name must have at least 2 letters and only letters/spaces.");
+      return;
+    }
+    if (!isValidTeam(team)) {
+      alert("Team must contain valid names separated by commas.");
+      return;
+    }
+    if (new Date(deadline) <= new Date(startDate)) {
+      alert("Deadline must be after Start Date.");
+      return;
+    }
+
+    const newProj = {
+      id: Date.now(),
+      ...newProject,
+    };
+
+    const updatedData = [newProj, ...projectsData];
+    setProjectsData(updatedData);
+    saveToStorage(updatedData);
+
+    setShowModal(false);
+    setNewProject({
+      name: "",
+      teamLead: "",
+      team: "",
+      priority: "Low",
+      startDate: "",
+      deadline: "",
+      status: "Ongoing",
+    });
+  };
+
+  const handleDeleteProject = (id) => {
+    if (window.confirm("Are you sure you want to delete this project?")) {
+      const updatedProjects = projectsData.filter((proj) => proj.id !== id);
+      setProjectsData(updatedProjects);
+      saveToStorage(updatedProjects);
+    }
+  };
+
+  const handleRefresh = () => {
+    const stored = localStorage.getItem("projectsData");
+    if (stored) {
+      setProjectsData(JSON.parse(stored));
+    }
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const handleDownload = () => {
+    const headers = ["Project Name", "Team Lead", "Team", "Priority", "Start Date", "Deadline", "Status"];
+    const csvRows = [
+      headers.join(","),
+      ...projectsData.map((proj) =>
+        [proj.name, proj.teamLead, proj.team, proj.priority, proj.startDate, proj.deadline, proj.status].join(",")
+      ),
+    ];
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "projects.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-         <div className="flex justify-between items-center">
-                <h5 className="p-4 text-sm">Project</h5>
-                <div className="flex gap-2 items-center">
-                  <a href="/dashboard">
-                    {" "}
-                    <FaHome className="text-lg" />
-                  </a>
-                  <span className="text-lg">&gt;</span>
-                  <span className="text-lg">Home</span>
-                  <span className="text-lg">&gt;</span>
-                  <span className="text-lg">Project</span>
-                </div>
-              </div>
-      <div className="mx-auto bg-white shadow-md rounded-md">
-        <div className="px-6 py-3 flex justify-between items-center border-b border-gray-200">
-          <h4 className="mb-0 text-lg text-gray-700 font-semibold">My Projects</h4>
-          <FaDownload className="text-gray-500 cursor-pointer" />
+    <div className="min-h-screen bg-gray-100 px-4">
+      <div className="flex flex-wrap justify-between items-center py-4">
+        <h1 className="text-2xl md:text-4xl font-semibold" style={{ fontFamily: "Times New Roman" }}>
+          Projects
+        </h1>
+        <div className="flex gap-2 items-center text-sm md:text-base flex-wrap">
+          <FaHome />
+          <span>&gt;</span>
+          <span>Home</span>
+          <span>&gt;</span>
+          <span>Projects</span>
+        </div>
+      </div>
+
+      <div className="bg-[#D9E1F2] shadow-md rounded-md overflow-x-auto">
+        <div className="px-4 py-2.5 flex flex-wrap justify-between items-center gap-4">
+          <div className="flex gap-5 items-center flex-wrap">
+            <p className="text-lg text-gray-600 font-bold">Projects</p>
+            <div className="flex items-center gap-2 bg-white px-3 py-1 rounded shadow-sm">
+              <FaSearch className="text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="outline-none text-sm bg-transparent p-1"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <FcPlus size={24} className="cursor-pointer" onClick={() => setShowModal(true)} />
+            <SlRefresh size={20} className="cursor-pointer" onClick={handleRefresh} />
+            <FaDownload className="text-gray-700 cursor-pointer" onClick={handleDownload} />
+          </div>
         </div>
 
-        <div className="p-4 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm bg-white">
+            <thead className="text-black border-b border-gray-300">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Project Title
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Client Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Start Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  End Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Deadline
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  No of Members
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Priority
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Progress
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
+                <th className="text-left px-4 py-3">Project Name</th>
+                <th className="text-left px-4 py-3">Team Lead</th>
+                <th className="text-left px-4 py-3">Team</th>
+                <th className="text-left px-4 py-3">Priority</th>
+                <th className="text-left px-4 py-3">Start Date</th>
+                <th className="text-left px-4 py-3">Deadline</th>
+                <th className="text-left px-4 py-3">Status</th>
+                <th className="text-left px-4 py-3">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentItems.map((project) => (
-                <tr key={project.id}>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    {project.id}
+            <tbody>
+              {currentItems.map((project, index) => (
+                <tr key={project.id} className={`${index % 2 === 0 ? "bg-gray-100" : ""} hover:bg-gray-50`}>
+                  <td className="px-4 py-3">{project.name}</td>
+                  <td className="px-4 py-3">{project.teamLead}</td>
+                  <td className="px-4 py-3">{project.team}</td>
+                  <td className="px-4 py-3">
+                    <span className={getPriorityClass(project.priority)}>{project.priority}</span>
                   </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {project.projectTitle}
+                  <td className="px-4 py-3">{project.startDate}</td>
+                  <td className="px-4 py-3">{project.deadline}</td>
+                  <td className="px-4 py-3">
+                    <span className={getStatusClass(project.status)}>{project.status}</span>
                   </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    {project.clientName}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    {project.startDate}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    {project.endDate}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    {project.deadline}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex items-center">
-                      {project.members.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs mr-1`}
-                        >
-                          {index + 1}
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityColors[project.priority]}`}
+                  <td className="px-4 py-3">
+                    <button
+                      className="text-red-500 hover:text-red-700 font-semibold"
+                      onClick={() => handleDeleteProject(project.id)}
                     >
-                      {project.priority}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    <div className="relative pt-1">
-                      <div className="overflow-hidden h-2 mb-1 text-xs flex rounded bg-blue-200">
-                        <div
-                          style={{ width: `${project.progress}%` }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[project.status]}`}
-                    >
-                      {project.status}
-                    </span>
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -254,102 +253,106 @@ const Project = () => {
           </table>
         </div>
 
-        {/* Pagination Controls below the table */}
-        <div className="px-4 py-3 bg-white flex items-center justify-between border-t border-gray-200 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
+        {/* Pagination Controls */}
+        <div className="flex flex-wrap justify-between items-center px-4 py-3 bg-white gap-4">
+          <div className="flex items-center">
+            <label htmlFor="itemsPerPage" className="mr-2">Items per page:</label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="px-2 py-1 border border-gray-300 rounded"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
             <button
-              onClick={prevPage}
+              onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              className="text-gray-600 disabled:text-gray-300"
             >
-              Previous
+              <FaArrowLeft />
             </button>
+            <span className="text-sm">Page {currentPage} of {totalPages}</span>
             <button
-              onClick={nextPage}
+              onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              className="text-gray-600 disabled:text-gray-300"
             >
-              Next
+              <FaArrowRight />
             </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">
-                  {(currentPage - 1) * itemsPerPage + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {Math.min(currentPage * itemsPerPage, projectData.length)}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium">{projectData.length}</span> results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                <button
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Previous</span>
-                  <FaArrowLeft className="h-5 w-5" />
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      aria-current={currentPage === page ? "page" : undefined}
-                      className={`${
-                        currentPage === page
-                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                      } relative inline-flex items-center px-4 py-2 border text-sm font-medium`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
-                <button
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Next</span>
-                  <FaArrowRight className="h-5 w-5" />
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
-        <div className="px-4 py-3 bg-gray-50 flex justify-end items-center">
-          <label htmlFor="itemsPerPage" className="mr-2 text-sm text-gray-700">
-            Items per page:
-          </label>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-            className="mt-1 block w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-          </select>
-          <div className="ml-4 text-sm text-gray-700">
-            {/* Corrected the display of the range */}
-            {currentPage * itemsPerPage > projectData.length
-              ? `${(currentPage - 1) * itemsPerPage + 1} - ${projectData.length} of ${projectData.length}`
-              : `${(currentPage - 1) * itemsPerPage + 1} - ${currentPage * itemsPerPage} of ${projectData.length}`}
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+  <div className="fixed inset-0 flex justify-center items-center z-50 p-4 bg-black/20">
+    <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+      <h2 className="text-xl font-bold mb-4">Add Project</h2>
+      {["name", "teamLead", "team"].map((field) => (
+        <input
+          key={field}
+          type="text"
+          placeholder={field.replace(/([A-Z])/g, " $1")}
+          value={newProject[field]}
+          onChange={(e) => setNewProject({ ...newProject, [field]: e.target.value })}
+          className="w-full mb-3 p-2 border rounded"
+        />
+      ))}
+      <input
+        type="date"
+        value={newProject.startDate}
+        onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
+        className="w-full mb-3 p-2 border rounded"
+      />
+      <input
+        type="date"
+        value={newProject.deadline}
+        onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+        className="w-full mb-3 p-2 border rounded"
+      />
+      <select
+        value={newProject.priority}
+        onChange={(e) => setNewProject({ ...newProject, priority: e.target.value })}
+        className="w-full mb-3 p-2 border rounded"
+      >
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+      <select
+        value={newProject.status}
+        onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
+        className="w-full mb-3 p-2 border rounded"
+      >
+        <option>Ongoing</option>
+        <option>Completed</option>
+        <option>On Hold</option>
+      </select>
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-gray-300 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleAddProject}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

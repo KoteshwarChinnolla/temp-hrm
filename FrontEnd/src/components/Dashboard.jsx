@@ -26,7 +26,6 @@ const DashboardCard = ({ title, count, icon, description, bgColor }) => (
 );
 
 const Dashboard = () => {
-
   const mockBarData = [
     { country: "USA", burger: 100, fries: 80 },
     { country: "UK", burger: 70, fries: 60 },
@@ -96,7 +95,11 @@ const Dashboard = () => {
 
   return (
     <Box className="p-6 space-y-6 bg-gray-100 min-h-screen">
-      <Typography variant="h4" mb={2}>
+      <Typography
+        variant="h2"
+        mb={2}
+        style={{ fontFamily: "Times New Roman, serif" }}
+      >
         Dashboard
       </Typography>
 

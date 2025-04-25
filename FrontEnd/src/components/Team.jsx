@@ -1,5 +1,5 @@
 import React from "react";
-import { FaHome  } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 const teamData = [
   {
     name: "Ella Jones",
@@ -43,25 +43,29 @@ const teamData = [
     email: "rohit.verma@example.com",
     phone: "+91 97865 67890",
   },
-  
 ];
 
 const Team = () => {
   return (
     <div className="p-6">
-        <div className="flex justify-between items-center">
-                <h5 className="p-4 text-sm">Teams</h5>
-                <div className="flex gap-2 items-center">
-                  <a href="/dashboard">
-                    {" "}
-                    <FaHome className="text-lg" />
-                  </a>
-                  <span className="text-lg">&gt;</span>
-                  <span className="text-lg">Home</span>
-                  <span className="text-lg">&gt;</span>
-                  <span className="text-lg">My Team</span>
-                </div>
-              </div>
+      <div className="flex justify-between items-center">
+        <h1
+          className="p-4 text-4xl"
+          style={{ fontFamily: "Times New Roman, serif" }}
+        >
+          Teams
+        </h1>
+        <div className="flex gap-2 items-center">
+          <a href="/dashboard">
+            {" "}
+            <FaHome className="text-lg" />
+          </a>
+          <span className="text-lg">&gt;</span>
+          <span className="text-lg">Home</span>
+          <span className="text-lg">&gt;</span>
+          <span className="text-lg">My Team</span>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {teamData.map((member, index) => (
           <div

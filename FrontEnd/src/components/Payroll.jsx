@@ -5,7 +5,7 @@ import {
     FaSearch,
     FaEnvelope,
 } from "react-icons/fa";
-import anasolLogo from "../assets/Anasol_logo11.png";
+import anasolLogo from "../assets/logo.png";
 import { IoFilterOutline, IoAddCircleOutline } from "react-icons/io5";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -648,7 +648,7 @@ const Payroll = () => {
                         <div className="relative">
                             <button
                                 onClick={() => setShowColumnDropdown(!showColumnDropdown)}
-                                className="p-2 text-black hover:text-gray-300 hover:bg-gray-300 rounded-full transition-colors"
+                                className="p-2 text-black hover:text-gray-300 hover:bg-black rounded-full transition-colors"
                                 title="Column Settings"
                             >
                                 <IoFilterOutline  className="text-xl" />
@@ -676,7 +676,7 @@ const Payroll = () => {
                         </div>
                         <button
                             onClick={() => setAddModal(true)}
-                            className="p-2 text-green- hover:text-green-800 hover:bg-gray-300 rounded-full transition-colors"
+                            className="p-2 text-green- hover:text-green-800 hover:bg-green-50 rounded-full transition-colors"
                             title="Add Employee"
                         >
                             <IoAddCircleOutline className="text-xl" />

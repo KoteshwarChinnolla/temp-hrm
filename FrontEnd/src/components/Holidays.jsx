@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { MdDelete, MdOutlineFileDownload  } from "react-icons/md";
+import { FaRegPlusSquare } from "react-icons/fa";
 
 const Holidays = () => {
   const [holidays, setHolidays] = useState([
@@ -141,17 +144,17 @@ const Holidays = () => {
           />
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
+        <button
             onClick={handleAddClick}
-            className="bg-blue-600 text-white px-3 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-all"
+            className="  px-3 py-2 rounded-xl shadow-md  transition-all"
           >
-            ➕ Add Holiday
+            <FaRegPlusSquare />
           </button>
           <button
             onClick={handleDownload}
-            className="bg-green-600 text-white px-3 py-2 rounded-xl shadow-md hover:bg-green-700 transition-all"
+            className="  px-3 py-2 rounded-xl shadow-md  transition-all"
           >
-            ⬇️ Download CSV
+            <MdOutlineFileDownload />
           </button>
         </div>
       </div>
@@ -188,8 +191,8 @@ const Holidays = () => {
                 </td>
                 <td className="px-5 py-3">{h.details.length > 30 ? `${h.details.slice(0, 30)}...` : h.details}</td>
                 <td className="px-5 py-3 space-x-2">
-                  <button onClick={() => handleEdit(i)} className="text-blue-600 hover:underline">✏️</button>
-                  <button onClick={() => handleRemove(i)} className="text-red-600 hover:underline">🗑️</button>
+                  <button onClick={() => handleEdit(i)} className="text-blue-600 hover:underline"><FiEdit className="w-5 h-5"/></button>
+                  <button onClick={() => handleRemove(i)} className="text-red-600 hover:underline"><MdDelete className="w-5 h-5"/></button>
                 </td>
               </tr>
             ))}

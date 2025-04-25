@@ -2,8 +2,18 @@ import React from "react";
 import { FaPaperPlane } from "react-icons/fa";
 
 const messages = [
-  { id: 1, sender: "Ella", text: "Hey, are we meeting today?", fromUser: false },
-  { id: 2, sender: "You", text: "Yes, at 3 PM. Don’t be late!", fromUser: true },
+  {
+    id: 1,
+    sender: "Ella",
+    text: "Hey, are we meeting today?",
+    fromUser: false,
+  },
+  {
+    id: 2,
+    sender: "You",
+    text: "Yes, at 3 PM. Don’t be late!",
+    fromUser: true,
+  },
   { id: 3, sender: "Ella", text: "Got it. See you soon!", fromUser: false },
 ];
 
@@ -17,9 +27,7 @@ const Chats = () => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${
-              msg.fromUser ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${msg.fromUser ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`max-w-xs p-3 rounded-lg text-sm ${
