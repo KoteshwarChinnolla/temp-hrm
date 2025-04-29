@@ -11,12 +11,13 @@ import { PiToolboxDuotone } from "react-icons/pi";
 import { FiClipboard } from "react-icons/fi";
 import { LuCalendar } from "react-icons/lu";
 import { BiSolidReport } from "react-icons/bi";
+import { FcReading } from "react-icons/fc";
+import { FaReacteurope, FaReadme } from "react-icons/fa";
 
 const adminMenuItems = [
   { icon: <Home size={20} />, text: "Dashboard", to: "/dashboard" },
   
   { icon: <Clipboard size={20} />, text: "Projects", to: "/projects" },
-  { icon: <Clipboard size={20} />, text: "Add Project", to: "/projects/add" },
   { icon: <CheckSquare size={20} />, text: "Attendance", to: "/Adminattendance" },
   { icon: <CheckSquare size={20} />, text: "Monthly Attendance", to: "/attendance/sheet" },
   { icon: <Calendar size={20} />, text: "Calendar", to: "/calender" },
@@ -27,6 +28,7 @@ const adminMenuItems = [
   { icon: <BsCupHot size={20} />, text: "Holidays", to: "/holidays" },
   { icon: <FiClipboard size={20} />, text: "Payroll", to: "/payroll" },
   { icon: <PiToolboxDuotone size={20} />, text: "Departments", to: "/departments" },
+  { icon: <FaReadme size={20} />, text: "Training", to: "/training" },
   { icon: <BiSolidReport size={20} />, text: "Reports", to: "/reports" },
   { icon: <Settings size={20} />, text: "Settings", to: "/settings" },
 ];

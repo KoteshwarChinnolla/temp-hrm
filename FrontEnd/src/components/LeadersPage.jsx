@@ -221,7 +221,12 @@ export default function LeadersPage() {
                     <img src={contact.image} alt={contact.name} className="w-9 h-9 rounded-full border" />
                     <span className="font-medium text-gray-800">{contact.name}</span>
                   </td>
-                  <td className="p-3 text-red-600">{contact.email}</td>
+                  <td className="p-3 text-red-600">
+                     <a href={`mailto:${contact.email}`} className="hover:underline">
+                        {contact.email}
+                              </a>
+                   </td>
+
                   <td className="p-3">{contact.role}</td>
                   <td className="p-3 text-green-600">📞 {contact.mobile}</td>
                   <td className="p-3">{contact.department}</td>

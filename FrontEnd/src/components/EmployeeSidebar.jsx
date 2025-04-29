@@ -16,6 +16,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import img from "../assets/profile.png";
+import { FiClipboard, FiPaperclip } from "react-icons/fi";
+import { CgRead } from "react-icons/cg";
+import { FaReadme } from "react-icons/fa";
+import { GrDocumentTime } from "react-icons/gr";
 
 const mainMenuItems = [
   { icon: <Home size={20} />, text: "Dashboard", to: "/dashboard" },
@@ -24,6 +28,9 @@ const mainMenuItems = [
   { icon: <Users size={20} />, text: "My Team", to: "/team" },
   { icon: <Airplay size={20} />, text: "My Project", to: "/project" },
   { icon: <Folder size={20} />, text: "My Tasks", to: "/tasks" },
+  { icon: <FiClipboard size={20} />, text: "Pay Slip", to: "/slips" },
+  { icon: <FaReadme size={20} />, text: "Training", to: "/trainings" },
+  { icon: < GrDocumentTime size={20} />, text: "Shift Management", to: "/shifts" },
   { icon: <Settings size={20} />, text: "Settings", to: "/settings" },
   { icon: <MessageSquare size={20} />, text: "Chat", to: "/chat" },
 ];

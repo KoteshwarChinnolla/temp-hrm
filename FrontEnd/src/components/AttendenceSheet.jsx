@@ -7,12 +7,13 @@ const employees = [
   { name: "Robert Lee", avatar: "https://i.pravatar.cc/40?img=3" },
 ];
 
+// Removed "A" from here
 const generateAttendance = (year, month) => {
   const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth();
   return Array.from({ length: daysInMonth }, (_, i) => {
     const day = dayjs(`${year}-${month}-${i + 1}`);
     if (day.day() === 0 || day.day() === 6) return "-";
-    const status = ["P", "A", "L"];
+    const status = ["P", "L"]; // Only Present and Leave
     return status[Math.floor(Math.random() * status.length)];
   });
 };
@@ -43,6 +44,13 @@ const AttendanceSheet = () => {
     setAttendanceData(updatedAttendanceData);
   }, [month, year]);
 
+  const calculateStats = (attendance) => {
+    const workingDays = attendance.filter((day) => day !== "-").length;
+    const presentDays = attendance.filter((day) => day === "P").length;
+    const leaveDays = attendance.filter((day) => day === "L").length;
+    return { workingDays, presentDays, leaveDays };
+  };
+
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -51,18 +59,13 @@ const AttendanceSheet = () => {
           Employee Attendance - {dayjs(`${year}-${month}`).format("MMMM YYYY")}
         </h1>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-gray-700">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+          {/* Only Present, Leave, and Weekend badges */}
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 bg-green-100 text-green-700 rounded-full text-center text-xs font-bold">
               P
             </span>{" "}
             Present
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 bg-red-100 text-red-700 rounded-full text-center text-xs font-bold">
-              A
-            </span>{" "}
-            Absent
           </div>
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 bg-yellow-100 text-yellow-700 rounded-full text-center text-xs font-bold">
@@ -126,11 +129,14 @@ const AttendanceSheet = () => {
 
       {/* Table Section */}
       <div className="bg-white shadow-md rounded-lg overflow-auto">
-        <table className="min-w-[700px] w-full text-sm text-center border-collapse">
+        <table className="min-w-[800px] w-full text-sm text-center border-collapse">
           <thead>
             <tr className="bg-gray-200 sticky top-0 z-10">
               <th className="border px-2 py-2">#</th>
               <th className="border px-2 py-2 text-left">Employee</th>
+              <th className="border px-2 py-2">Working Days</th>
+              <th className="border px-2 py-2">Present</th>
+              <th className="border px-2 py-2">Leaves</th>
               {days.map(({ day }) => (
                 <th key={day} className="border px-2 py-1">
                   {day}
@@ -139,45 +145,49 @@ const AttendanceSheet = () => {
             </tr>
           </thead>
           <tbody>
-            {attendanceData.map((emp, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="border px-2 py-1">{idx + 1}</td>
-                <td className="border px-2 py-1 text-left flex items-center gap-2">
-                  <img
-                    src={emp.avatar}
-                    alt={emp.name}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  {emp.name}
-                </td>
-                {emp.attendance.map((status, i) => (
-                  <td
-                    key={i}
-                    className={`border px-1 py-1 ${
-                      status === "-"
-                        ? "text-gray-400 font-semibold"
-                        : "font-semibold"
-                    }`}
-                  >
-                    {status !== "-" ? (
-                      <span
-                        className={`inline-block w-6 h-6 leading-6 text-xs rounded-full ${
-                          status === "P"
-                            ? "bg-green-100 text-green-700"
-                            : status === "A"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        {status}
-                      </span>
-                    ) : (
-                      "-"
-                    )}
+            {attendanceData.map((emp, idx) => {
+              const { workingDays, presentDays, leaveDays } = calculateStats(emp.attendance);
+
+              return (
+                <tr key={idx} className="hover:bg-gray-50">
+                  <td className="border px-2 py-1">{idx + 1}</td>
+                  <td className="border px-2 py-1 text-left flex items-center gap-2">
+                    <img
+                      src={emp.avatar}
+                      alt={emp.name}
+                      className="w-6 h-6 rounded-full"
+                    />
+                    {emp.name}
                   </td>
-                ))}
-              </tr>
-            ))}
+                  <td className="border px-2 py-1">{workingDays}</td>
+                  <td className="border px-2 py-1 text-green-600 font-bold">{presentDays}</td>
+                  <td className="border px-2 py-1 text-yellow-600 font-bold">{leaveDays}</td>
+
+                  {emp.attendance.map((status, i) => (
+                    <td
+                      key={i}
+                      className={`border px-1 py-1 ${
+                        status === "-" ? "text-gray-400 font-semibold" : "font-semibold"
+                      }`}
+                    >
+                      {status !== "-" ? (
+                        <span
+                          className={`inline-block w-6 h-6 leading-6 text-xs rounded-full ${
+                            status === "P"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

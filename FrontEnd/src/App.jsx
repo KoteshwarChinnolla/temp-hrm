@@ -11,7 +11,7 @@ import TodayAttendence from "./components/TodayAttendence";
 import AttendanceSheet from "./Components/AttendenceSheet";
 import AttendancePage from "./Components/AttendancePage";
 import LeadersPage from "./components/LeadersPage";
-import Projects from "./Components/Projects";
+import Projects from "./components/Projects";
 import AddProjects from "./components/AddProjects";
 
 import ProjectDetails from "./Components/ProjectDetails";
@@ -33,6 +33,10 @@ import Chats from "./components/Chats";
 import Contact from "./components/Contact";
 import Calender from "./components/Calendar";
 import Tasks from "./components/Tasks";
+import PayEmp from "./components/PayEmp";
+import AdminTraining from "./components/AdminTraining";
+import EmpTraining from "./components/Courses";
+import Shifts from "./components/Shifts";
 
 export default function App() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -68,6 +72,7 @@ export default function App() {
                     <Route path="/Empattendance" element={<AttendancePage />} />
                     <Route path="/leaves" element={<Leaves />} />
                     <Route path="/team" element={<Team />} />
+                    <Route path="/slips" element={<PayEmp />} />
                     <Route path="/project" element={<Project />} />
                     <Route path="/tasks" element={<Tasks />} />
                     <Route path="/settings" element={<Settings />} />
@@ -79,6 +84,9 @@ export default function App() {
                     <Route path="/leaders" element={<LeadersPage />} />
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/projects/add" element={<AddProjects />} />
+                    <Route path="/training" element={<AdminTraining />} />
+                    <Route path="/trainings" element={<EmpTraining />} />
+                    <Route path="/shifts" element={<Shifts />} />
                   
                     <Route path="/project/details" element={<ProjectDetails />} />
                     <Route path="/employees/all" element={<EmployeeManagement />} />
