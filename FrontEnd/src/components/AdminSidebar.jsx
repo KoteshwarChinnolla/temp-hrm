@@ -13,6 +13,7 @@ import { LuCalendar } from "react-icons/lu";
 import { BiSolidReport } from "react-icons/bi";
 import { FcReading } from "react-icons/fc";
 import { FaReacteurope, FaReadme } from "react-icons/fa";
+import { GrDocumentTime } from "react-icons/gr";
 
 const adminMenuItems = [
   { icon: <Home size={20} />, text: "Dashboard", to: "/dashboard" },
@@ -25,6 +26,7 @@ const adminMenuItems = [
   { icon: <Contact size={20} />, text: "Contact", to: "/contacts" },
   { icon: <Users size={20} />, text: "Employees", to: "/employees/all" },
   { icon: <LuCalendar size={20} />, text: "Leave Management", to: "/leavemanagement" },
+  { icon: <GrDocumentTime size={20} />, text: "Shift Managment", to: "/shiftad" },
   { icon: <BsCupHot size={20} />, text: "Holidays", to: "/holidays" },
   { icon: <FiClipboard size={20} />, text: "Payroll", to: "/payroll" },
   { icon: <PiToolboxDuotone size={20} />, text: "Departments", to: "/departments" },

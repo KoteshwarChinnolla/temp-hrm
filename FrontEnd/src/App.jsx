@@ -37,6 +37,7 @@ import PayEmp from "./components/PayEmp";
 import AdminTraining from "./components/AdminTraining";
 import EmpTraining from "./components/Courses";
 import Shifts from "./components/Shifts";
+import ShiftsAd from "./components/ShiftsAd";
 
 export default function App() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -87,6 +88,7 @@ export default function App() {
                     <Route path="/training" element={<AdminTraining />} />
                     <Route path="/trainings" element={<EmpTraining />} />
                     <Route path="/shifts" element={<Shifts />} />
+                    <Route path="/shiftad" element={<ShiftsAd />} />
                   
                     <Route path="/project/details" element={<ProjectDetails />} />
                     <Route path="/employees/all" element={<EmployeeManagement />} />
