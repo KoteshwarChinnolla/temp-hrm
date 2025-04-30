@@ -15,6 +15,7 @@ import {
   UserPlus,
   ChevronRight,
 } from "lucide-react";
+import {LuCalendar} from "react-icons/lu"
 import img from "../assets/profile.png";
 import { FiClipboard, FiPaperclip } from "react-icons/fi";
 import { CgRead } from "react-icons/cg";
@@ -33,6 +34,12 @@ const mainMenuItems = [
   { icon: < GrDocumentTime size={20} />, text: "Shift Management", to: "/shifts" },
   { icon: <Settings size={20} />, text: "Settings", to: "/settings" },
   { icon: <MessageSquare size={20} />, text: "Chat", to: "/chat" },
+  
+];
+
+const teamLead=[
+  { icon: <LuCalendar size={20} />, text: "Leave Request", to: "/teamleadleavereq" },
+  { icon: <MessageSquare size={20} />, text: "Task", to: "/assign" },
 ];
 
 const appsMenuItems = [
@@ -49,7 +56,7 @@ const appsMenuItems = [
   },
 ];
 
-const EmployeeSidebar = ({ isExpanded }) => {
+const EmployeeSidebar = ({ isExpanded,isTeamLead }) => {
   return (
     <div
       className={`h-100vh bg-white text-black flex flex-col transition-all duration-300 
@@ -85,7 +92,31 @@ const EmployeeSidebar = ({ isExpanded }) => {
                 {item.text}
               </span>
             </Link>
+            
           ))}
+          { isTeamLead && (
+            teamLead.map((item, index) => (
+              <Link
+                key={index}
+                to={item.to}
+                className="flex items-center p-3 rounded hover:bg-gray-300 transition-all text-black no-underline"
+                style={{ textDecoration: "none" }}
+              >
+                <span>{item.icon}</span>
+                <span
+                  className={`ml-4 text-sm ${
+                    isExpanded ? "inline" : "hidden group-hover:inline"
+                  }`}
+                >
+                  {item.text}
+                </span>
+              </Link>
+              
+            )
+
+          ))
+
+          }
         </nav>
 
         {/* APPS section */}

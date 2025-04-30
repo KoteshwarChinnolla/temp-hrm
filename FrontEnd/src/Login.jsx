@@ -19,6 +19,7 @@ const Login = ({ setRole }) => {
   const [error, setError] = useState("");
   const [step, setStep] = useState(1);
 
+
   const [timer, setTimer] = useState(59);
   const [resendEnabled, setResendEnabled] = useState(false);
 
@@ -26,6 +27,7 @@ const Login = ({ setRole }) => {
 
   const mobileRefs = Array.from({ length: 4 }, () => useRef());
   const emailRefs = Array.from({ length: 6 }, () => useRef());
+  const [isEmployeelogin,setEmployeelogin]=useState(false);
 
   useEffect(() => {
     const mountTimer = setTimeout(() => setIsMounted(true), 100);
@@ -46,8 +48,10 @@ const Login = ({ setRole }) => {
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
-    setName(role === "Admin" ? "admin" : "employee");
-    setPassword(role === "Admin" ? "admin" : "employee");
+    setEmployeelogin(role === "Employee");
+    setName(role === "Admin" ? "admin" : role === "Team Lead" ? "teamlead" : "team");
+    setPassword(role === "Admin" ? "admin" : role==="Team Lead" ? "teamlead" : "team");
+    
   };
 
   const handleLoginSubmit = async (e) => {
@@ -60,8 +64,9 @@ const Login = ({ setRole }) => {
 
     if (selectedRole === "Admin") {
       sendOtpToPhone(mobileNumber, "admin");
-    } else if (selectedRole === "Employee") {
-      sendOtpToPhone(mobileNumber, "employee");
+    } else if (selectedRole === "Team Lead" || selectedRole==="Team Member") {
+      sendOtpToPhone(mobileNumber, selectedRole); // <-- CORRECT
+
     }
 
     resetTimer();
@@ -71,7 +76,7 @@ const Login = ({ setRole }) => {
     console.log(`Sending OTP to ${role} at phone number: ${phoneNumber}`);
     if (role === "admin") {
       console.log("Admin OTP sent.");
-    } else if (role === "employee") {
+    } else if (role === "Team Lead" || role=="Team Member") {
       console.log("Employee OTP sent.");
     }
   };
@@ -80,7 +85,7 @@ const Login = ({ setRole }) => {
     console.log(`Sending OTP to ${role} at email: ${email}`);
     if (role === "admin") {
       console.log("Admin Email OTP sent.");
-    } else if (role === "employee") {
+    } else if (role === "Team Lead" || role=="Team Member") {
       console.log("Employee Email OTP sent.");
     }
   };
@@ -119,13 +124,21 @@ const Login = ({ setRole }) => {
         } else {
           setError("Invalid Mobile OTP for Admin. Please try again.");
         }
-      } else if (selectedRole === "Employee") {
+      } else if (selectedRole === "Team Lead") {
         if (mobileOtp.join("") === "2222") {
           setStep(2);
-          sendOtpToEmail(email, "employee");
+          sendOtpToEmail(email, selectedRole);
           resetTimer();
         } else {
-          setError("Invalid Mobile OTP for Employee. Please try again.");
+          setError("Invalid Mobile OTP for Team Lead. Please try again.");
+        }
+      } else if (selectedRole === "Team Member") {
+        if (mobileOtp.join("") === "2222") {
+          setStep(2);
+          sendOtpToEmail(email, selectedRole);
+          resetTimer();
+        } else {
+          setError("Invalid Mobile OTP for Team Member. Please try again.");
         }
       }
     } else if (step === 2) {
@@ -136,7 +149,7 @@ const Login = ({ setRole }) => {
         } else {
           setError("Invalid Admin Email OTP. Please try again.");
         }
-      } else if (selectedRole === "Employee") {
+      } else if (selectedRole === "Team Lead" || selectedRole==="Team Member") {
         if (emailOtp.join("") === "XYZ456") {
           setRole(selectedRole);
           navigate("/dashboard");
@@ -199,7 +212,7 @@ const Login = ({ setRole }) => {
 
             {!otpScreen && (
               <div className="flex gap-2 justify-center">
-                {["Admin", "Employee"].map((role) => (
+                {isEmployeelogin && (["Team Lead", "Team Member"].map((role) => (
                   <button
                     key={role}
                     onClick={() => handleRoleSelect(role)}
@@ -207,7 +220,16 @@ const Login = ({ setRole }) => {
                   >
                     {role}
                   </button>
-                ))}
+                )))}
+                {isEmployeelogin==false && (["Admin", "Employee"].map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => handleRoleSelect(role)}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${selectedRole === role ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                  >
+                    {role}
+                  </button>
+                )))}
               </div>
             )}
 

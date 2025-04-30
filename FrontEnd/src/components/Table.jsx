@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { User, Building, Clock, Calendar,Plus,Filter, RefreshCcw, Download, Trash2 } from "lucide-react";
-import {FaEdit} from "react-icons/fa";
+import {FaEdit,FaRegCalendarTimes, FaRegCalendarCheck } from "react-icons/fa";
+import { TbFileDescription } from "react-icons/tb";
+import { LiaCalendarDaySolid } from "react-icons/lia";
+import { GrStatusUnknown } from "react-icons/gr";
 
-const Table = ({ columns, rows=[],title,DialogOpen,isDepartment }) => {
+const Table = ({ columns, rows=[],title,DialogOpen,isDepartment,TeamLead }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleColumns, setVisibleColumns] = useState(
     columns.reduce((acc, column) => {
@@ -114,85 +117,85 @@ const Table = ({ columns, rows=[],title,DialogOpen,isDepartment }) => {
 
   
   return (
-    <div className="p-4 md:p-8 bg-[#ecf0f4] min-h-screen font-sans">
+    <div className="p-1 md:p-3 bg-[#ecf0f4] min-h-screen font-sans">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4 mr-2">{title}</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-7 ">{title}</h1>
       </div>
 
       <div className="bg-white rounded-md shadow-sm">
-      <div className="bg-[#dae1f3] px-4 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-t-md">
-  <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-3">
-    <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
-    <div className="relative w-full md:w-64">
-      <input
-        type="text"
-        placeholder="Search"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-8 pr-3 py-1 text-sm border border-gray-300 rounded shadow-sm bg-white text-gray-600 w-full"
-      />
-      <span className="absolute left-2 top-1.5 text-gray-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.15z" />
-        </svg>
-      </span>
-    </div>
-  </div>
-
-  <div className="w-full md:w-auto flex gap-4 items-center justify-end">
-    <div className="relative">
-      <button title="Filter" onClick={() => setShowColumnMenu(!showColumnMenu)}>
-        <Filter className="w-5 h-5 text-gray-600 mt-1" />
-      </button>
-      {showColumnMenu && (
-        <div className="absolute right-0 -left-4 top-8 bg-gray-100 shadow-xl border border-gray-200 rounded-xl z-50 w-60 max-h-72 overflow-y-auto text-sm hover:bg-gray-50">
-          <div className="px-4 py-3 font-semibold text-gray-800 border-b border-gray-200">
-            Show/Hide Columns
-          </div>
-          {Object.keys(visibleColumns).map((key) => (
-            <label
-              key={key}
-              className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition-all cursor-pointer"
-            >
+        <div className="bg-[#dae1f3] px-4 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-t-md">
+          <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-3">
+            <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+            <div className="relative w-full md:w-64">
               <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                checked={visibleColumns[key]}
-                onChange={() => toggleColumn(key)}
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 pr-3 py-1 text-sm border border-gray-300 rounded shadow-sm bg-white text-gray-600 w-full"
               />
-              <span className="text-gray-700">
-                {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+              <span className="absolute left-2 top-1.5 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.15z" />
+                </svg>
               </span>
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
+            </div>
+          </div>
 
-          {isDepartment && (
+          <div className="w-full md:w-auto flex gap-4 items-center justify-end">
+            <div className="relative">
+              <button title="Filter" onClick={() => setShowColumnMenu(!showColumnMenu)}>
+                <Filter className="w-5 h-5 text-gray-600 mt-1" />
+              </button>
+              {showColumnMenu && (
+                <div className="absolute right-0 -left-4 top-8 bg-gray-100 shadow-xl border border-gray-200 rounded-xl z-50 w-60 max-h-72 overflow-y-auto text-sm hover:bg-gray-50">
+                  <div className="px-4 py-3 font-semibold text-gray-800 border-b border-gray-200">
+                    Show/Hide Columns
+                  </div>
+                  {Object.keys(visibleColumns).map((key) => (
+                    <label
+                      key={key}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition-all cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        checked={visibleColumns[key]}
+                        onChange={() => toggleColumn(key)}
+                      />
+                      <span className="text-gray-700">
+                        {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {isDepartment && (
+              <button
+                className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-green-500 text-green-500 hover:bg-green-100"
+                onClick={() => {
+                  setIsAddDepartmentOpen(true);
+                }}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            )}
+
             <button
-              className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-green-500 text-green-500 hover:bg-green-100"
-              onClick={() => {
-                setIsAddDepartmentOpen(true);
-              }}
+              title="Refresh"
+              onClick={handleRefresh}
+              className={`transition-transform transform duration-500 ${
+                refreshing ? "rotate-[135deg] translate-x-2 -translate-y-2" : "rotate-0"
+              }`}
             >
-              <Plus className="w-4 h-4" />
+              <RefreshCcw className="w-5 h-5 text-gray-600" />
             </button>
-          )}
-
-          <button
-            title="Refresh"
-            onClick={handleRefresh}
-            className={`transition-transform transform duration-500 ${
-              refreshing ? "rotate-[135deg] translate-x-2 -translate-y-2" : "rotate-0"
-            }`}
-          >
-            <RefreshCcw className="w-5 h-5 text-gray-600" />
-          </button>
-          <button title="Download" onClick={handleDownload}>
-            <Download className="w-5 h-5 text-blue-500" />
-          </button>
-        </div>
+            <button title="Download" onClick={handleDownload}>
+              <Download className="w-5 h-5 text-blue-500" />
+            </button>
+          </div>
       </div>
 
         <div className={`overflow-x-auto transition-all duration-500 max-h-screen ${refreshing ? "opacity-50 translate-x-2 -translate-y-2" : "opacity-100"}`}>
@@ -206,52 +209,59 @@ const Table = ({ columns, rows=[],title,DialogOpen,isDepartment }) => {
             </tr>
           </thead>
 
-            <tbody>
-              {paginatedData.map((leave, index) => (
-                <tr
-                  key={index}
-                  onClick={() => openModal(leave)}
-                  className="border-b border-gray-200 hover:bg-gray-200 text-gray-700"
-                >
-                  {columns.map(
-                    (col) =>
-                      visibleColumns[col.key] && (
-                        <td key={col.key} className="p-3">
-                          {col.key === "status" ? (
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[leave[col.key]]}`}>
-                              {leave[col.key]}
-                            </span>
-                          ) : (
-                            leave[col.key]
-                          )}
-                        </td>
-                      )
-                  )}
-                  <td className="p-3 flex items-center">
-                   {isDepartment && (
+          <tbody>
+            {paginatedData.map((leave, index) => (
+              <tr
+                key={index}
+                onClick={() => openModal(leave)}
+                className="border-b border-gray-200 hover:bg-gray-200 text-gray-700"
+              >
+                {columns.map(
+                  (col) =>
+                    visibleColumns[col.key] && (
+                      <td key={col.key} className="p-3">
+                        {(col.key === "status" || col.key === "teamLeadStatus") ? (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              statusColors[leave[col.key]] || "bg-gray-300 text-gray-800"
+                            }`}
+                          >
+                            {leave[col.key]}
+                          </span>
+                        ) : (
+                          leave[col.key]
+                        )}
+                      </td>
+                    )
+                )}
+                <td className="p-3 flex items-center">
+                  {isDepartment && (
                     <button
-                    onClick={() => {
-                      setIsAddDepartmentOpen(true);
-                      setisEdit(true);
-                      setNewDepartment(leave);
-                    }}
-                    
-                    className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  >
-                    <FaEdit size={16} />
-                  </button>
-                   )}
-                    <button title="Delete" onClick={(e) => {
-                            e.stopPropagation();
-                            setConfirmDelete(true);
-                            setDeleteIndex(index); // this index is from paginatedData
-                          }}>                 
-                      <Trash2 className="w-4 h-4 text-orange-500 ml-3" />
+                      onClick={() => {
+                        setIsAddDepartmentOpen(true);
+                        setisEdit(true);
+                        setNewDepartment(leave);
+                      }}
+                      className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                    >
+                      <FaEdit size={16} />
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                  )}
+                  <button
+                    title="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDelete(true);
+                      setDeleteIndex(index);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-orange-500 ml-3" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
           </table>
         </div>
         <div className="bg-gray-50 px-4 py-3 flex justify-between items-center border-t border-gray-200">
@@ -271,7 +281,7 @@ const Table = ({ columns, rows=[],title,DialogOpen,isDepartment }) => {
               ))}
             </select>
           </div>
-          <div className="flex items-center">
+          <div className="ml-2 flex items-center">
             <span className="text-sm text-gray-500 mr-4">
               {filteredData.length === 0 ? 0 : page * itemsPerPage + 1}–{Math.min((page + 1) * itemsPerPage, filteredData.length)} of {filteredData.length}
             </span>
@@ -290,60 +300,104 @@ const Table = ({ columns, rows=[],title,DialogOpen,isDepartment }) => {
           </div>
         </div>
       </div>
-      { DialogOpen &&  (
-        <Dialog open={isOpen} onClose={closeModal} className="relative z-50">
-        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <img src="https://i.pravatar.cc/40" alt="Profile" className="w-8 h-8 rounded-full" />
-                Leave Details
-              </h2>
-              <button onClick={closeModal} className="text-gray-500 text-xl">&times;</button>
+      {DialogOpen && (
+          <Dialog open={isOpen} onClose={closeModal} className="relative z-50">
+            <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+              <Dialog.Panel className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold flex items-center gap-2">
+                    <img src="https://i.pravatar.cc/40" alt="Profile" className="w-8 h-8 rounded-full" />
+                    Leave Details
+                  </h2>
+                  <button onClick={closeModal} className="text-gray-500 text-xl" aria-label="Close dialog">&times;</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-gray-700">
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">Name:</span>
+                    <span>{selectedRequest?.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Building className="w-5 h-5" />
+                    <span className="font-medium">Department:</span>
+                    <span>{selectedRequest?.department}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5" />
+                    <span className="font-medium">Leave Type: </span>
+                    <span>{selectedRequest?.leaveType}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <TbFileDescription className="w-5 h-5" />
+                    <span className="font-medium">Reason:</span>
+                    <span>{selectedRequest?.reason || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5" />
+                    <span className="font-medium">From date: </span>
+                    <span>{selectedRequest?.leaveFrom}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5" />
+                    <span className="font-medium">To date: </span>
+                    <span>{selectedRequest?.leaveTo}</span>
+                  </div> 
+                  <div className="flex items-center gap-3">
+                    <FaRegCalendarTimes className="w-5 h-5" />
+                    <span className="font-medium">Leaves Remaining:</span>
+                    <span>{selectedRequest?.leavesRemaining}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <FaRegCalendarCheck className="w-5 h-5" />
+                    <span className="font-medium">Leaves Taken:</span>
+                    <span>{selectedRequest?.leavesTaken}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <LiaCalendarDaySolid className="w-5 h-5" />
+                    <span className="font-medium">Days Requested:</span>
+                    <span>{selectedRequest?.numDays}</span>
+                  </div>
+                  {
+                    TeamLead==false &&(
+                      <div className="flex items-center gap-3">
+                    <GrStatusUnknown className="w-5 h-5" />
+                    <span className="font-medium">Team Lead Approval:</span>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        statusColors[selectedRequest?.teamLeadStatus] || "bg-gray-300 text-gray-800"
+                      }`}
+                    >
+                      {selectedRequest?.teamLeadStatus || "—"}
+                    </span>
+                  </div>
+                    )
+                  }
+                </div>
+
+                <div className="flex gap-4 justify-end pt-4">
+                  <button className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800"
+                    onClick={() => {
+                      showToast("Leave Request Approved!", "success");
+                      closeModal();
+                    }}>
+                    Approve
+                  </button>
+                  <button className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800"
+                    onClick={() => {
+                      showToast("Leave Request Rejected!", "error");
+                      closeModal();
+                    }}>
+                    Reject
+                  </button>
+                </div>
+              </Dialog.Panel>
             </div>
-            <div className="space-y-3 text-gray-700">
-              <div className="flex items-center gap-3">
-                <User className="w-5 h-5" />
-                <span>{selectedRequest?.name}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Building className="w-5 h-5" />
-                <span>Department: {selectedRequest?.department}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5" />
-                <span>{selectedRequest?.leaveType}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5" />
-                <span>From date: {selectedRequest?.leaveFrom}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5" />
-                <span>To date: {selectedRequest?.leaveTo}</span>
-              </div>
-            </div>
-            <div className="flex gap-4 justify-end pt-4">
-              <button className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800"
-                onClick={() => {
-                  showToast("Leave Request Approved !", "success");
-                  closeModal();
-                }}>
-                Approve
-              </button>
-              <button className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800"
-                onClick={() => {
-                  showToast("Leave Request Rejected !", "error");
-                  closeModal();
-                }}>
-                Reject
-              </button>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
+          </Dialog>
       )}
+
+
       {confirmDelete && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-sm"></div>

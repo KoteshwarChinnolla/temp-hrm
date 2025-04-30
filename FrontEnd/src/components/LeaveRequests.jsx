@@ -15,7 +15,13 @@ const leaveData = Array.from({ length: 30 }, (_, i) => ({
   requestedOn: "01/05/2018",
   approvedBy: i % 3 === 0 ? "Tom Johnson" : "—",
   approvalDate: i % 3 === 0 ? "01/07/2018" : "—",
+
+  // ✅ Newly added fields
+  leavesTaken: 10 + (i % 5), // example: 10–14
+  leavesRemaining: 20 - (i % 5), // example: 15–19
+  teamLeadStatus: i % 2 === 0 ? "Approved" : "Pending", // readable format
 }));
+
 
 const leaveColumns = [
   { key: "empId", name: "Employee ID" },
@@ -24,21 +30,27 @@ const leaveColumns = [
   { key: "leaveType", name: "Leave Type" },
   { key: "leaveFrom", name: "Leave From" },
   { key: "leaveTo", name: "Leave To" },
-  { key: "numDays", name: "# of Days" },
+  { key: "numDays", name: "Number of Days" },
   { key: "duration", name: "Duration" },
   { key: "status", name: "Status" },
   { key: "reason", name: "Reason" },
   { key: "requestedOn", name: "Requested On" },
   { key: "approvedBy", name: "Approved By" },
   { key: "approvalDate", name: "Approval Date" },
+
+  // ✅ New fields
+  { key: "leavesTaken", name: "Leaves Taken" },
+  { key: "leavesRemaining", name: "Leaves Remaining" },
+  { key: "teamLeadStatus", name: "Team Lead Approval" },
 ];
+
 
 const LeaveRequests = () => {
   const memoizedRows = useMemo(() => leaveData, [leaveData]);
 
   return (
-    <div className="p-6">
-      <Table rows={memoizedRows} columns={leaveColumns} title='Leave Request' DialogOpen={true} />
+    <div>
+      <Table rows={memoizedRows} columns={leaveColumns} title='Leave Request' DialogOpen={true} isDepartment={false} TeamLead={false}/>
     </div>
   );
 };

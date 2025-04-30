@@ -327,6 +327,23 @@ export default function ShiftManagement() {
     },
   ]);
 
+  // Get all days in a month for shift selection
+  const getMonthDaysForShift = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const lastDay = new Date(year, month + 1, 0);
+    const days = [];
+
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      const currentDate = new Date(year, month, i);
+      days.push({
+        date: currentDate,
+        dayIndex: i - 1, // 0-based index for the shift.day property
+      });
+    }
+    return days;
+  };
+
   // New shift form
   const [newShift, setNewShift] = useState({
     employeeId: "",
@@ -336,6 +353,8 @@ export default function ShiftManagement() {
     end: "17:00",
     department: "Front End",
     position: "Cashier",
+    selectedMonth: new Date().getMonth(),
+    selectedYear: new Date().getFullYear(),
   });
 
   // Filter states
@@ -350,6 +369,47 @@ export default function ShiftManagement() {
     department: "Front End",
     status: "Active",
   });
+
+  // Add view type state
+  const [calendarView, setCalendarView] = useState("week"); // "week" or "month"
+
+  // Add state for selected month and year in schedule view
+  const [selectedScheduleMonth, setSelectedScheduleMonth] = useState(
+    new Date().getMonth()
+  );
+  const [selectedScheduleYear, setSelectedScheduleYear] = useState(
+    new Date().getFullYear()
+  );
+
+  // Get all months
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // Get years (current year and next year)
+  const years = [new Date().getFullYear(), new Date().getFullYear() + 1];
+
+  // Get days for selected month and year
+  const getDaysInMonth = (month, year) => {
+    const date = new Date(year, month, 1);
+    const days = [];
+    while (date.getMonth() === parseInt(month)) {
+      days.push(new Date(date));
+      date.setDate(date.getDate() + 1);
+    }
+    return days;
+  };
 
   // Helper function to get week dates
   function getWeekDates(date) {
@@ -427,6 +487,8 @@ export default function ShiftManagement() {
         end: "17:00",
         department: "Front End",
         position: "Cashier",
+        selectedMonth: new Date().getMonth(),
+        selectedYear: new Date().getFullYear(),
       });
     }
   };
@@ -483,9 +545,28 @@ export default function ShiftManagement() {
   // Handle input change for new shift form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewShift({
-      ...newShift,
-      [name]: value,
+    setNewShift((prev) => {
+      const updates = {
+        ...prev,
+        [name]: value,
+      };
+
+      // Reset start and end day when month or year changes
+      if (name === "selectedMonth" || name === "selectedYear") {
+        const days = getDaysInMonth(
+          name === "selectedMonth" ? value : prev.selectedMonth,
+          name === "selectedYear" ? value : prev.selectedYear
+        );
+        updates.startDay = "0";
+        updates.endDay = "0";
+      }
+
+      // Ensure end day is not before start day
+      if (name === "startDay" && parseInt(value) > parseInt(prev.endDay)) {
+        updates.endDay = value;
+      }
+
+      return updates;
     });
   };
 
@@ -538,6 +619,27 @@ export default function ShiftManagement() {
     });
   };
 
+  // Format month for display
+  const formatMonth = (date) => {
+    return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  };
+
+  // Function to handle month change in schedule view
+  const handleScheduleMonthChange = (month) => {
+    setSelectedScheduleMonth(parseInt(month));
+    const newDate = new Date(selectedScheduleYear, parseInt(month), 1);
+    setCurrentDate(newDate);
+    setCurrentWeek(getWeekDates(newDate));
+  };
+
+  // Function to handle year change in schedule view
+  const handleScheduleYearChange = (year) => {
+    setSelectedScheduleYear(parseInt(year));
+    const newDate = new Date(parseInt(year), selectedScheduleMonth, 1);
+    setCurrentDate(newDate);
+    setCurrentWeek(getWeekDates(newDate));
+  };
+
   return (
     <div
       className={`flex h-screen bg-gray-10 text-gray-800 ${
@@ -580,16 +682,39 @@ export default function ShiftManagement() {
             <div className="bg-white rounded-xl shadow-sm">
               {/* Schedule header */}
               <div className="p-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-200">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-4">
                   <button
                     onClick={goToPreviousWeek}
                     className="p-2 rounded-lg hover:bg-gray-100 transition-all"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <h3 className="text-xl font-medium">
-                    {formatDate(currentWeek[0])} - {formatDate(currentWeek[6])}
-                  </h3>
+                  <div className="flex items-center space-x-3">
+                    <select
+                      value={selectedScheduleMonth}
+                      onChange={(e) =>
+                        handleScheduleMonthChange(e.target.value)
+                      }
+                      className="text-lg font-medium bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
+                    >
+                      {months.map((month, index) => (
+                        <option key={month} value={index}>
+                          {month}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={selectedScheduleYear}
+                      onChange={(e) => handleScheduleYearChange(e.target.value)}
+                      className="text-lg font-medium bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
+                    >
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <button
                     onClick={goToNextWeek}
                     className="p-2 rounded-lg hover:bg-gray-100 transition-all"
@@ -599,6 +724,29 @@ export default function ShiftManagement() {
                 </div>
 
                 <div className="flex items-center space-x-3">
+                  <div className="bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setCalendarView("week")}
+                      className={`px-4 py-2 rounded-lg transition-all ${
+                        calendarView === "week"
+                          ? "bg-white text-blue-600 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      Week
+                    </button>
+                    <button
+                      onClick={() => setCalendarView("month")}
+                      className={`px-4 py-2 rounded-lg transition-all ${
+                        calendarView === "month"
+                          ? "bg-white text-blue-600 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      Month
+                    </button>
+                  </div>
+
                   <div className="relative">
                     <select
                       value={departmentFilter}
@@ -625,94 +773,201 @@ export default function ShiftManagement() {
                 </div>
               </div>
 
-              {/* Calendar grid */}
-              <div className="overflow-x-auto">
-                <div className="min-w-[768px]">
-                  {/* Day headers */}
-                  <div className="grid grid-cols-8 border-b border-gray-200">
-                    <div className="p-4 font-medium text-gray-500 border-r border-gray-200">
-                      Employee
+              {/* Calendar grid with fixed first column */}
+              <div className="relative">
+                <div className="flex">
+                  {/* Fixed Employee Column */}
+                  <div className="sticky left-0 z-40 bg-white flex-none w-[200px]">
+                    {/* Employee Header */}
+                    <div className="border-b border-r border-gray-200 h-[72px] flex items-center">
+                      <div className="p-4 font-medium text-gray-500">
+                        Employee
+                      </div>
                     </div>
-                    {currentWeek.map((date, index) => (
+
+                    {/* Employee Names Column */}
+                    {filteredEmployees.map((employee, index) => (
                       <div
-                        key={index}
-                        className="p-4 text-center border-r border-gray-200"
+                        key={employee.id}
+                        className={`h-[80px] flex items-center border-r border-b border-gray-200 ${
+                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        }`}
                       >
-                        <div className="font-medium">{formatDay(date)}</div>
-                        <div className="text-sm text-gray-500">
-                          {formatDate(date)}
+                        <div className="p-4 flex items-center w-full">
+                          <div
+                            className={`w-10 h-10 rounded-full ${employee.color} text-white flex items-center justify-center mr-3 shadow-sm flex-shrink-0`}
+                          >
+                            {employee.avatar}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">
+                              {employee.name}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {employee.position}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Employee rows */}
-                  {filteredEmployees.map((employee, index) => (
+                  {/* Scrollable Content */}
+                  <div className="overflow-x-auto flex-1">
                     <div
-                      key={employee.id}
-                      className={`grid grid-cols-8 ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      } hover:bg-gray-100 transition-colors border-b border-gray-200`}
+                      className={`${
+                        calendarView === "month"
+                          ? "min-w-[3720px]"
+                          : "min-w-[840px]"
+                      }`}
                     >
-                      <div className="p-4 flex items-center border-r border-gray-200">
-                        <div
-                          className={`w-10 h-10 rounded-full ${employee.color} text-white flex items-center justify-center mr-3 shadow-sm`}
-                        >
-                          {employee.avatar}
-                        </div>
-                        <div>
-                          <div className="font-medium">{employee.name}</div>
-                          <div className="text-xs text-gray-500">
-                            {employee.position}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Days of the week */}
-                      {[0, 1, 2, 3, 4, 5, 6].map((day) => (
-                        <div
-                          key={day}
-                          className="p-3 relative min-h-[80px] border-r border-gray-200"
-                        >
-                          {shifts
-                            .filter(
-                              (shift) =>
-                                shift.employeeId === employee.id &&
-                                shift.day === day
-                            )
-                            .map((shift) => (
+                      {/* Days Header */}
+                      <div
+                        className={`grid ${
+                          calendarView === "week"
+                            ? "grid-cols-7"
+                            : "grid-cols-31"
+                        } border-b border-gray-200`}
+                      >
+                        {calendarView === "week"
+                          ? currentWeek.map((date, index) => (
                               <div
-                                key={shift.id}
-                                className={`p-3 rounded-lg mb-2 text-sm shadow-sm ${
-                                  shift.department === "Front End"
-                                    ? "bg-blue-50"
-                                    : shift.department === "Inventory"
-                                    ? "bg-green-50"
-                                    : shift.department === "Management"
-                                    ? "bg-purple-50"
-                                    : "bg-red-50"
-                                }`}
+                                key={index}
+                                className="h-[72px] flex flex-col justify-center items-center border-r border-gray-200"
                               >
-                                <div className="flex justify-between items-start">
-                                  <span className="font-medium">
-                                    {shift.start} - {shift.end}
-                                  </span>
-                                  <button
-                                    onClick={() => handleDeleteShift(shift.id)}
-                                    className="text-gray-400 hover:text-red-500 transition-colors"
-                                  >
-                                    <Trash className="h-4 w-4" />
-                                  </button>
+                                <div className="font-medium">
+                                  {formatDay(date)}
                                 </div>
-                                <div className="text-xs text-gray-600 mt-1">
-                                  {shift.position}
+                                <div className="text-sm text-gray-500">
+                                  {formatDate(date)}
                                 </div>
                               </div>
-                            ))}
+                            ))
+                          : getMonthDaysForShift(currentDate).map(
+                              ({ date, dayIndex }) => (
+                                <div
+                                  key={dayIndex}
+                                  className="h-[72px] flex flex-col justify-center items-center border-r border-gray-200"
+                                >
+                                  <div className="font-medium">
+                                    {formatDay(date)}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {formatDate(date)}
+                                  </div>
+                                </div>
+                              )
+                            )}
+                      </div>
+
+                      {/* Schedule Grid */}
+                      {filteredEmployees.map((employee, index) => (
+                        <div
+                          key={employee.id}
+                          className={`grid ${
+                            calendarView === "week"
+                              ? "grid-cols-7"
+                              : "grid-cols-31"
+                          } ${
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          } border-b border-gray-200`}
+                        >
+                          {calendarView === "week"
+                            ? [0, 1, 2, 3, 4, 5, 6].map((day) => (
+                                <div
+                                  key={day}
+                                  className="h-[80px] p-3 relative border-r border-gray-200"
+                                >
+                                  {shifts
+                                    .filter(
+                                      (shift) =>
+                                        shift.employeeId === employee.id &&
+                                        shift.day === day
+                                    )
+                                    .map((shift) => (
+                                      <div
+                                        key={shift.id}
+                                        className={`p-3 rounded-lg mb-2 text-sm shadow-sm ${
+                                          shift.department === "Front End"
+                                            ? "bg-blue-50"
+                                            : shift.department === "Inventory"
+                                            ? "bg-green-50"
+                                            : shift.department === "Management"
+                                            ? "bg-purple-50"
+                                            : "bg-red-50"
+                                        }`}
+                                      >
+                                        <div className="flex justify-between items-start">
+                                          <span className="font-medium">
+                                            {shift.start} - {shift.end}
+                                          </span>
+                                          <button
+                                            onClick={() =>
+                                              handleDeleteShift(shift.id)
+                                            }
+                                            className="text-gray-400 hover:text-red-500 transition-colors"
+                                          >
+                                            <Trash className="h-4 w-4" />
+                                          </button>
+                                        </div>
+                                        <div className="text-xs text-gray-600 mt-1">
+                                          {shift.position}
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              ))
+                            : getMonthDaysForShift(currentDate).map(
+                                ({ date, dayIndex }) => (
+                                  <div
+                                    key={dayIndex}
+                                    className="h-[80px] p-3 relative border-r border-gray-200"
+                                  >
+                                    {shifts
+                                      .filter(
+                                        (shift) =>
+                                          shift.employeeId === employee.id &&
+                                          shift.day === dayIndex
+                                      )
+                                      .map((shift) => (
+                                        <div
+                                          key={shift.id}
+                                          className={`p-2 rounded-lg mb-1 text-xs shadow-sm ${
+                                            shift.department === "Front End"
+                                              ? "bg-blue-50"
+                                              : shift.department === "Inventory"
+                                              ? "bg-green-50"
+                                              : shift.department ===
+                                                "Management"
+                                              ? "bg-purple-50"
+                                              : "bg-red-50"
+                                          }`}
+                                        >
+                                          <div className="flex justify-between items-start">
+                                            <span className="font-medium">
+                                              {shift.start} - {shift.end}
+                                            </span>
+                                            <button
+                                              onClick={() =>
+                                                handleDeleteShift(shift.id)
+                                              }
+                                              className="text-gray-400 hover:text-red-500 transition-colors"
+                                            >
+                                              <Trash className="h-3 w-3" />
+                                            </button>
+                                          </div>
+                                          <div className="text-xs text-gray-600 mt-0.5">
+                                            {shift.position}
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
+                                )
+                              )}
                         </div>
                       ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -888,6 +1143,44 @@ export default function ShiftManagement() {
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-800 mb-2">
+                        Month
+                      </label>
+                      <select
+                        name="selectedMonth"
+                        value={newShift.selectedMonth}
+                        onChange={handleInputChange}
+                        className="w-full border-2 border-gray-200 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      >
+                        {months.map((month, index) => (
+                          <option key={month} value={index}>
+                            {month}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-2">
+                        Year
+                      </label>
+                      <select
+                        name="selectedYear"
+                        value={newShift.selectedYear}
+                        onChange={handleInputChange}
+                        className="w-full border-2 border-gray-200 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      >
+                        {years.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-2">
                         Start Day
                       </label>
                       <select
@@ -896,7 +1189,10 @@ export default function ShiftManagement() {
                         onChange={handleInputChange}
                         className="w-full border-2 border-gray-200 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       >
-                        {currentWeek.map((date, index) => (
+                        {getDaysInMonth(
+                          parseInt(newShift.selectedMonth),
+                          parseInt(newShift.selectedYear)
+                        ).map((date, index) => (
                           <option key={index} value={index}>
                             {formatDay(date)} ({formatDate(date)})
                           </option>
@@ -914,11 +1210,14 @@ export default function ShiftManagement() {
                         onChange={handleInputChange}
                         className="w-full border-2 border-gray-200 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       >
-                        {currentWeek.map((date, index) => (
+                        {getDaysInMonth(
+                          parseInt(newShift.selectedMonth),
+                          parseInt(newShift.selectedYear)
+                        ).map((date, index) => (
                           <option
                             key={index}
                             value={index}
-                            disabled={index < newShift.startDay}
+                            disabled={index < parseInt(newShift.startDay)}
                           >
                             {formatDay(date)} ({formatDate(date)})
                           </option>

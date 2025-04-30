@@ -1,517 +1,235 @@
-import React, { useState } from "react";
-import { FiDownload } from "react-icons/fi";
-import { jsPDF } from "jspdf";
+import React, { useRef } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import anasolLogo from "../assets/Anasol_logo11.png"; // Replace with your actual logo path
 
-const PayEmp = () => {
-  const [employee, setEmployee] = useState({
-    id: 1,
+const PayslipView = () => {
+  const payslipRef = useRef();
+
+  const item = {
     employee: "John Doe",
-    empid: "EMP001",
-    email: "john.doe@example.com",
-    department: "Technology",
-    basicSalary: 50000,
-    housingAllowance: 10000,
-    transportAllowance: 3000,
-    bonus: 5000,
-    deductions: 2000,
-    month: "March",
-    year: "2025",
+    empid: "1001",
+    designation: "Software Engineer",
+    department: "Technology Services",
+    phoneNo: "9876543200",
+    bankAccountName: "John Doe",
+    bankAccountNo: "12345678900",
+    gender: "Male",
+    panNo: "ABCDE1000F",
+    pfNo: "PF2000",
+    ifscCode: "ANSL000100",
+    email: "john.doe@anasol.com",
+    month: "March 2025",
     status: "Paid",
-  });
+    salary: "₹80,000",
+  };
 
-  const [selectedMonth, setSelectedMonth] = useState(employee.month);
-  const [selectedYear, setSelectedYear] = useState(employee.year);
+  const basic = parseFloat(item.salary.replace(/[^0-9.-]+/g, ""));
+  const hra = Math.round(basic * 0.4);
+  const personal = Math.round(basic * 0.2);
+  const remote = 3000;
+  const books = 3000;
+  const professional = 15000;
+  const conveyance = 2734;
+  const pf = 4161;
+  const tax = 200;
+  const gross = basic + hra + personal + remote + books + professional + conveyance;
+  const deductions = pf + tax;
+  const net = gross - deductions;
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - i); // Last 10 years
-
-  // Calculate total pay
-  const totalPay =
-    parseFloat(employee.basicSalary) +
-    parseFloat(employee.housingAllowance) +
-    parseFloat(employee.transportAllowance) +
-    parseFloat(employee.bonus) -
-    parseFloat(employee.deductions);
-
-  const handleDownloadPayslipPDF = (item) => {
-   
-        const doc = new jsPDF({
-            orientation: "landscape",
-            unit: "mm",
-            format: "a4",
-        });
-
-        const img = new Image();
-        img.src = anasolLogo;
-
-        img.onload = function () {
-            const pageWidth = doc.internal.pageSize.width;
-            const pageHeight = doc.internal.pageSize.height;
-            const leftMargin = 10;
-            const rightMargin = 10;
-            const tableWidth = pageWidth - (leftMargin + rightMargin);
-
-            // Add a subtle background color to the entire page
-            doc.setFillColor(252, 252, 252);
-            doc.rect(0, 0, pageWidth, pageHeight, "F");
-
-            // Header section with gradient-like effect
-            doc.setFillColor(0, 32, 96); // Dark blue
-            doc.rect(0, 0, pageWidth, 30, "F");
-            doc.setFillColor(0, 45, 120); // Slightly lighter blue
-            doc.rect(0, 28, pageWidth, 2, "F");
-
-            // Company Logo - White background for logo
-            doc.setFillColor(255, 255, 255);
-            doc.circle(leftMargin + 10, 15, 10, "F");
-            doc.addImage(img, "PNG", leftMargin, 5, 20, 20);
-
-            // Company Name and Title
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.text("ANASOL CONSULTANCY SERVICES PVT LTD", pageWidth / 2, 15, {
-                align: "center",
-            });
-            doc.setFontSize(12);
-            doc.text("SALARY SLIP", pageWidth / 2, 23, { align: "center" });
-
-            // Reset text color
-            doc.setTextColor(0, 0, 0);
-
-            // Employee Details Section with modern styling
-            const startY = 40;
-            doc.setFontSize(8);
-            doc.setFont("helvetica", "normal");
-
-            // Define column positions
-            const leftCol = leftMargin;
-            const midCol = pageWidth / 2;
-            const labelWidth = 45;
-            const valueWidth = pageWidth / 2 - labelWidth - 15;
-
-            // Section Title
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 32, 96);
-            doc.text("Employee Information", leftMargin, startY - 5);
-
-            // Draw boxes with modern styling
-            doc.setDrawColor(220, 220, 220);
-            doc.setFillColor(248, 249, 250);
-            doc.roundedRect(leftCol, startY - 3, pageWidth / 2 - 15, 48, 2, 2, "F");
-            doc.roundedRect(
-                midCol - 5,
-                startY - 3,
-                pageWidth / 2 - 15,
-                48,
-                2,
-                2,
-                "F"
-            );
-
-            // Reset text color
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(8);
-
-            // Employee details with improved styling
-            const leftDetails = [
-                { label: "Employee Name", value: item.employee },
-                { label: "Employee ID", value: item.empid },
-                { label: "Designation", value: item.designation },
-                { label: "Department", value: item.department },
-                { label: "Phone No", value: item.phoneNo },
-                { label: "Bank A/C Name", value: item.bankAccountName },
-                { label: "Bank A/C No", value: item.bankAccountNo },
-            ];
-
-            const rightDetails = [
-                { label: "Gender", value: item.gender },
-                { label: "PAN No", value: item.panNo },
-                { label: "PF No", value: item.pfNo },
-                { label: "IFSC Code", value: item.ifscCode },
-                { label: "Email", value: item.email },
-                { label: "Month", value: item.month },
-                { label: "Status", value: item.status },
-            ];
-
-            let currentY = startY;
-            const lineHeight = 7;
-
-            // Draw details with improved styling
-            const drawDetails = (details, startX) => {
-                details.forEach((detail) => {
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(80, 80, 80);
-                    doc.text(detail.label + ":", startX + 2, currentY);
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(0, 0, 0);
-                    const splitValue = doc.splitTextToSize(detail.value, valueWidth);
-                    doc.text(splitValue, startX + labelWidth, currentY);
-                    currentY += lineHeight;
-                });
-                currentY = startY; // Reset for next column
-            };
-
-            drawDetails(leftDetails, leftCol);
-            drawDetails(rightDetails, midCol);
-
-            // Days Information Section
-            currentY = startY + 55;
-
-            // Section Title
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 32, 96);
-            doc.text("Attendance Information", leftMargin, currentY - 5);
-
-            const daysInfo = [
-                { label: "Standard Days", value: "31" },
-                { label: "Payable Days", value: "31.00" },
-                { label: "Loss of Pay Days", value: "0.00" },
-                { label: "LOP Reversal Days", value: "0.00" },
-                { label: "Arrear Days", value: "0.00" },
-            ];
-
-            // Create modern days information table
-            const daysCellWidth = tableWidth / daysInfo.length;
-            daysInfo.forEach((info, index) => {
-                const x = leftMargin + daysCellWidth * index;
-                doc.roundedRect(x, currentY, daysCellWidth - 1, 12, 1, 1);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(80, 80, 80);
-                doc.text(info.label, x + 2, currentY + 7);
-                doc.setFont("helvetica", "normal");
-                doc.setTextColor(0, 0, 0);
-                doc.text(info.value, x + daysCellWidth - 3, currentY + 7, {
-                    align: "right",
-                });
-            });
-
-            // Earnings and Deductions Table
-            currentY += 25;
-
-            // Section Title
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 32, 96);
-            doc.text("Salary Details", leftMargin, currentY - 5);
-
-            // Adjust the width ratio for earnings and deductions
-            const earningsWidth = tableWidth * 0.75;
-            const deductionsWidth = tableWidth * 0.25;
-
-            // Headers with modern styling
-            doc.setFillColor(0, 32, 96);
-            doc.roundedRect(leftMargin, currentY, earningsWidth, 10, 1, 1, "F");
-            doc.roundedRect(
-                leftMargin + earningsWidth,
-                currentY,
-                deductionsWidth,
-                10,
-                1,
-                1,
-                "F"
-            );
-
-            doc.setTextColor(255, 255, 255);
-            doc.text("EARNINGS", leftMargin + 3, currentY + 6);
-            doc.text("DEDUCTIONS", leftMargin + earningsWidth + 3, currentY + 6);
-
-            // Subheaders
-            currentY += 10;
-            const descriptionWidth = earningsWidth * 0.25;
-            const rateWidth = (earningsWidth - descriptionWidth) / 4;
-
-            // Draw subheaders with modern styling
-            doc.setFillColor(240, 242, 245);
-            doc.roundedRect(leftMargin, currentY, descriptionWidth, 10, 1, 1);
-
-            const rateHeaders = [
-                "MONTHLY RATE",
-                "CURRENT MONTH",
-                "ARREAR (+/-)",
-                "TOTAL",
-            ];
-            rateHeaders.forEach((header, index) => {
-                const x = leftMargin + descriptionWidth + rateWidth * index;
-                doc.roundedRect(x, currentY, rateWidth - 1, 10, 1, 1);
-                doc.setTextColor(80, 80, 80);
-                doc.text(header, x + 3, currentY + 6);
-            });
-
-            doc.roundedRect(
-                leftMargin + earningsWidth,
-                currentY,
-                deductionsWidth,
-                10,
-                1,
-                1
-            );
-            doc.text("AMOUNT", pageWidth - rightMargin - 3, currentY + 6, {
-                align: "right",
-            });
-
-            // Data rows with modern styling
-            currentY += 10;
-            const rowHeight = 7;
-
-            // Calculate earnings based on salary
-            const basicSalary = parseFloat(item.salary.replace(/[^0-9.-]+/g, ""));
-            const hra = Math.round(basicSalary * 0.4);
-            const personalAllowance = Math.round(basicSalary * 0.2);
-            const remoteAllowance = 3000;
-            const booksAllowance = 3000;
-            const professionalAllowance = 15000;
-            const conveyanceAllowance = 2734;
-
-            const earnings = [
-                {
-                    desc: "BASIC",
-                    rate: basicSalary.toLocaleString("en-IN"),
-                    current: basicSalary.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: basicSalary.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "HOUSE RENT ALLOWANCE",
-                    rate: hra.toLocaleString("en-IN"),
-                    current: hra.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: hra.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "PERSONAL ALLOWANCE",
-                    rate: personalAllowance.toLocaleString("en-IN"),
-                    current: personalAllowance.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: personalAllowance.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "REMOTE WORKING ALLOWANCE",
-                    rate: remoteAllowance.toLocaleString("en-IN"),
-                    current: remoteAllowance.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: remoteAllowance.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "BOOKS AND JOURNALS",
-                    rate: booksAllowance.toLocaleString("en-IN"),
-                    current: booksAllowance.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: booksAllowance.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "PROFESSIONAL PURSUIT",
-                    rate: professionalAllowance.toLocaleString("en-IN"),
-                    current: professionalAllowance.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: professionalAllowance.toLocaleString("en-IN"),
-                },
-                {
-                    desc: "CONVEYANCE ALLOWANCE",
-                    rate: conveyanceAllowance.toLocaleString("en-IN"),
-                    current: conveyanceAllowance.toLocaleString("en-IN"),
-                    arrear: "0",
-                    total: conveyanceAllowance.toLocaleString("en-IN"),
-                },
-            ];
-
-            const deductions = [
-                { desc: "P.F.", amount: "4,161" },
-                { desc: "PROFESSION TAX", amount: "200" },
-            ];
-
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(0, 0, 0);
-            earnings.forEach((row, index) => {
-                const y = currentY + rowHeight * index;
-
-                // Alternating row background
-                if (index % 2 === 0) {
-                    doc.setFillColor(252, 252, 252);
-                    doc.rect(leftMargin, y, earningsWidth, rowHeight, "F");
-                    if (index < deductions.length) {
-                        doc.rect(
-                            leftMargin + earningsWidth,
-                            y,
-                            deductionsWidth,
-                            rowHeight,
-                            "F"
-                        );
-                    }
-                }
-
-                // Draw data
-                doc.text(row.desc, leftMargin + 3, y + 5);
-                const rateX = leftMargin + descriptionWidth;
-                doc.text(row.rate, rateX + rateWidth - 3, y + 5, { align: "right" });
-                doc.text(row.current, rateX + rateWidth * 2 - 3, y + 5, {
-                    align: "right",
-                });
-                doc.text(row.arrear, rateX + rateWidth * 3 - 3, y + 5, {
-                    align: "right",
-                });
-                doc.text(row.total, rateX + rateWidth * 4 - 3, y + 5, {
-                    align: "right",
-                });
-
-                if (index < deductions.length) {
-                    doc.text(
-                        deductions[index].desc,
-                        leftMargin + earningsWidth + 5,
-                        y + 5
-                    );
-                    doc.text(
-                        deductions[index].amount,
-                        pageWidth - rightMargin - 3,
-                        y + 5,
-                        { align: "right" }
-                    );
-                }
-            });
-
-            // Totals row with modern styling
-            currentY += rowHeight * earnings.length;
-            doc.setFillColor(0, 32, 96);
-            doc.roundedRect(leftMargin, currentY, tableWidth, 8, 1, 1, "F");
-
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(255, 255, 255);
-            doc.text("GROSS EARNINGS", leftMargin + 3, currentY + 5);
-            const rateX = leftMargin + descriptionWidth;
-            doc.text("93,237", rateX + rateWidth * 2 - 3, currentY + 5, {
-                align: "right",
-            });
-            doc.text("0", rateX + rateWidth * 3 - 3, currentY + 5, {
-                align: "right",
-            });
-            doc.text("93,237", rateX + rateWidth * 4 - 3, currentY + 5, {
-                align: "right",
-            });
-            doc.text(
-                "TOTAL DEDUCTIONS",
-                leftMargin + earningsWidth + 5,
-                currentY + 5
-            );
-            doc.text("4,361", pageWidth - rightMargin - 3, currentY + 5, {
-                align: "right",
-            });
-
-            // Net Pay Section with modern styling
-            currentY += 12;
-            doc.setFillColor(0, 32, 96);
-            doc.roundedRect(leftMargin, currentY, tableWidth, 18, 2, 2, "F");
-            doc.setFontSize(11);
-            doc.text("NET PAY", leftMargin + 3, currentY + 7);
-            doc.text("₹ 88,876/-", leftMargin + tableWidth - 3, currentY + 7, {
-                align: "right",
-            });
-            doc.setFontSize(8);
-            doc.text(
-                "(RUPEES EIGHTY EIGHT THOUSAND EIGHT HUNDRED SEVENTY SIX ONLY)",
-                leftMargin + 3,
-                currentY + 14
-            );
-
-            // Footer with modern styling
-            doc.setDrawColor(220, 220, 220);
-            doc.setFillColor(248, 249, 250);
-            doc.roundedRect(0, pageHeight - 15, pageWidth, 15, 0, 0, "F");
-            doc.setFontSize(7);
-            doc.setTextColor(80, 80, 80);
-            const address =
-                "#1016, 11th Floor, DSL Abacus IT Park, Uppal Hyderabad-500039 | Ph: 9032091726";
-            doc.text(address, pageWidth / 2, pageHeight - 7, { align: "center" });
-
-            doc.save(`${ item.employee }_Salary_Slip.pdf`);
-        };
-    };
-
+  // Start download
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(16);
+    doc.text("ANASOL CONSULTANCY SERVICES PVT LTD", 105, 15, { align: "center" });
+    doc.setFontSize(12);
+    doc.text("Salary Slip - " + item.month, 105, 25, { align: "center" });
+    
+    // Employee Info
+    doc.setFontSize(10);
+    doc.text("Employee Information", 14, 35);
+    autoTable(doc, {
+      startY: 38,
+      margin: { left: 14 },
+      head: [["Field", "Value"]],
+      body: [
+        ["Employee Name", item.employee],
+        ["Employee ID", item.empid],
+        ["Designation", item.designation],
+        ["Department", item.department],
+        ["Phone No", item.phoneNo],
+        ["Email", item.email],
+        ["Bank A/C Name", item.bankAccountName],
+        ["Bank A/C No", item.bankAccountNo],
+        ["Gender", item.gender],
+        ["PAN No", item.panNo],
+        ["PF No", item.pfNo],
+        ["IFSC Code", item.ifscCode],
+        ["Month", item.month],
+        ["Status", item.status],
+      ],
+    });
+    
+    // Salary Details
+    doc.text("Salary Details", 14, doc.lastAutoTable.finalY + 10);
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 13,
+      margin: { left: 14 },
+      head: [["Earnings", "Amount", "Deductions", "Amount"]],
+      body: [
+        ["Basic", basic, "P.F.", pf],
+        ["HRA", hra, "Profession Tax", tax],
+        ["Personal Allowance", personal, "", ""],
+        ["Remote Working", remote, "", ""],
+        ["Books & Journals", books, "", ""],
+        ["Professional Pursuit", professional, "", ""],
+        ["Conveyance", conveyance, "", ""],
+        ["Gross Earnings", gross, "Total Deductions", pf + tax],
+      ],
+    });
+    
+    // Net Pay
+    doc.setFontSize(12);
+    doc.setTextColor(0, 102, 204);
+    doc.text(`Net Pay: ₹ ${net.toLocaleString()}/-`, 14, doc.lastAutoTable.finalY + 15);
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(
+      "#1016, 11th Floor, DSL Abacus IT Park, Uppal Hyderabad-500039 | Ph: 9032091726",
+      14,
+      290
+    );
+    
+    // Save PDF
+    doc.save(`${item.employee}_Salary_Slip.pdf`);
+  };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100">
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Employee Payslip</h1>
-          
-        
-        </div>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleDownload}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Download PDF
+        </button>
+      </div>
 
-        {/* Select Month and Year */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Month</label>
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="w-full border px-4 py-2 rounded-md"
-          >
-            {months.map((month) => (
-              <option key={month} value={month}>{month}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Year</label>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="w-full border px-4 py-2 rounded-md"
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Display Detailed Salary Breakdown */}
-        <div className="space-y-6">
+      {/* Payslip Display */}
+      <div
+        ref={payslipRef}
+        className="bg-[#fcfcfc] p-8 max-w-[1050px] mx-auto border border-gray-300 shadow-md text-[13px] text-gray-900 font-sans"
+      >
+        {/* Header */}
+        <div className="bg-[#002060] text-white p-4 flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-semibold">Employee Information</h2>
-            <p><strong>Name:</strong> {employee.employee}</p>
-            <p><strong>Employee ID:</strong> {employee.empid}</p>
-            <p><strong>Email:</strong> {employee.email}</p>
-            <p><strong>Department:</strong> {employee.department}</p>
-            <p><strong>Month:</strong> {selectedMonth} {selectedYear}</p>
-            <p><strong>Status:</strong> {employee.status}</p>
+            <h1 className="text-lg font-bold">ANASOL CONSULTANCY SERVICES PVT LTD</h1>
+            <h2 className="text-sm font-medium mt-1">SALARY SLIP</h2>
           </div>
+          <div className="bg-white rounded-full p-1">
+            <img
+              src={anasolLogo}
+              alt="logo"
+              className="w-14 h-14 object-contain"
+              crossOrigin="anonymous"
+            />
+          </div>
+        </div>
 
-          <div>
-            <h2 className="text-lg font-semibold">Salary Breakdown</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div><strong>Basic Salary:</strong></div>
-              <div>₹{employee.basicSalary}</div>
-              <div><strong>Housing Allowance:</strong></div>
-              <div>₹{employee.housingAllowance}</div>
-              <div><strong>Transport Allowance:</strong></div>
-              <div>₹{employee.transportAllowance}</div>
-              <div><strong>Bonus:</strong></div>
-              <div>₹{employee.bonus}</div>
-              <div><strong>Deductions:</strong></div>
-              <div>₹{employee.deductions}</div>
-              <div><strong>Net Pay (After Deductions):</strong></div>
-              <div>₹{totalPay}</div>
+        {/* Employee Info */}
+        <div className="mt-6">
+          <h3 className="text-[#002060] font-bold mb-2">Employee Information</h3>
+          <div className="grid grid-cols-2 gap-x-10 gap-y-2 bg-[#f8f9fa] p-4 rounded-md border">
+            {[ 
+              ["Employee Name", item.employee], 
+              ["Employee ID", item.empid], 
+              ["Designation", item.designation], 
+              ["Department", item.department], 
+              ["Phone No", item.phoneNo], 
+              ["Email", item.email], 
+              ["Bank A/C Name", item.bankAccountName], 
+              ["Bank A/C No", item.bankAccountNo], 
+              ["Gender", item.gender], 
+              ["PAN No", item.panNo], 
+              ["PF No", item.pfNo], 
+              ["IFSC Code", item.ifscCode], 
+              ["Month", item.month], 
+              ["Status", item.status], 
+            ].map(([label, value]) => (
+              <div key={label}>
+                <strong>{label}:</strong> {value}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Salary Details */}
+        <div className="mt-6">
+          <h3 className="text-[#002060] font-bold mb-2">Salary Details</h3>
+          <div className="grid grid-cols-4 text-xs bg-[#f0f2f5] font-semibold px-3 py-2 border-t border-b">
+            <div className="col-span-2">EARNINGS</div>
+            <div className="col-span-2">DEDUCTIONS</div>
+          </div>
+          <div className="grid grid-cols-4 divide-x border-b text-sm">
+            <div className="col-span-2 p-4">
+              {[ 
+                ["BASIC", basic], 
+                ["HOUSE RENT ALLOWANCE", hra], 
+                ["PERSONAL ALLOWANCE", personal], 
+                ["REMOTE WORKING ALLOWANCE", remote], 
+                ["BOOKS AND JOURNALS", books], 
+                ["PROFESSIONAL PURSUIT", professional], 
+                ["CONVEYANCE ALLOWANCE", conveyance] 
+              ].map(([label, value]) => (
+                <div className="flex justify-between mb-1" key={label}>
+                  <span>{label}</span>
+                  <span>₹ {value.toLocaleString()}</span>
+                </div>
+              ))}
+              <div className="flex justify-between font-bold mt-2 border-t pt-2">
+                <span>GROSS EARNINGS</span>
+                <span>₹ {gross.toLocaleString()}</span>
+              </div>
+            </div>
+            <div className="col-span-2 p-4 bg-gray-50">
+              <div className="flex justify-between mb-1">
+                <span>P.F.</span>
+                <span>₹ {pf.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between mb-1">
+                <span>PROFESSION TAX</span>
+                <span>₹ {tax.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between font-bold mt-2 border-t pt-2">
+                <span>TOTAL DEDUCTIONS</span>
+                <span>₹ {deductions.toLocaleString()}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <button
-            onClick={handleDownloadPayslipPDF}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            Download Payslip
-          </button>
+        {/* Net Pay */}
+        <div className="mt-6 bg-[#002060] text-white px-6 py-4 rounded-md">
+          <div className="flex justify-between items-center text-lg font-semibold">
+            <span>NET PAY</span>
+            <span>₹ {net.toLocaleString()}/-</span>
+          </div>
+          <div className="mt-1 text-xs italic">
+            (RUPEES EIGHTY EIGHT THOUSAND EIGHT HUNDRED SEVENTY SIX ONLY)
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-[11px] text-gray-600 border-t mt-6 pt-4">
+          #1016, 11th Floor, DSL Abacus IT Park, Uppal Hyderabad-500039 | Ph: 9032091726
         </div>
       </div>
     </div>
   );
 };
 
-export default PayEmp;
+export default PayslipView;

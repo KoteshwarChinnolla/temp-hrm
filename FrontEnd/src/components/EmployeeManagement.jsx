@@ -5,7 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const EmployeeManagement = () => {
   const initialEmployees = [
-    // your employee list remains unchanged...
     {
       id: 1,
       name: "Manasa Sunkari",
@@ -18,6 +17,7 @@ const EmployeeManagement = () => {
       address: "123 Main St, City, Country",
       status: "Active",
       location: "Office",
+      project: "HRM",
       image: "",
       degree: "B.Tech in Computer Science",
       salary: "80000",
@@ -35,6 +35,7 @@ const EmployeeManagement = () => {
       address: "321 River Rd, City, Country",
       status: "Active",
       location: "Office",
+      project: "HyperEdge",
       image: "",
       degree: "M.Tech in Computer Engineering",
       salary: "90000",
@@ -52,6 +53,7 @@ const EmployeeManagement = () => {
       address: "12 Palm St, City, Country",
       status: "On Leave",
       location: "Work from Home",
+      project: "Mercury",
       image: "",
       degree: "B.Tech in Information Technology",
       salary: "75000",
@@ -69,6 +71,7 @@ const EmployeeManagement = () => {
       address: "88 Hillside Blvd, City, Country",
       status: "Active",
       location: "Office",
+      project: "Growup",
       image: "",
       degree: "B.Sc in Information Systems",
       salary: "78000",
@@ -86,6 +89,7 @@ const EmployeeManagement = () => {
       address: "77 Meadow Ln, City, Country",
       status: "Active",
       location: "Home",
+      project: "Nova",
       image: "",
       degree: "MBA in Business Analytics",
       salary: "88000",
@@ -103,6 +107,7 @@ const EmployeeManagement = () => {
       address: "40 Tech Park Ave, City, Country",
       status: "Active",
       location: "Office",
+      project: "SkyNet",
       image: "",
       degree: "B.E in Electronics and Communication",
       salary: "85000",
@@ -120,6 +125,7 @@ const EmployeeManagement = () => {
       address: "90 Rosewood St, City, Country",
       status: "Inactive",
       location: "Home",
+      project: "Zephyr",
       image: "",
       degree: "MA in Communications",
       salary: "70000",
@@ -181,9 +187,9 @@ const EmployeeManagement = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        "Name,Role,Department,Mobile,Joining Date,Email,Gender,Address,Status,Location,Degree,Salary,Last Promotion Date",
+        "Name,Role,Department,Mobile,Joining Date,Email,Gender,Address,Status,Location,Project,Degree,Salary,Last Promotion Date",
         ...employees.map((e) =>
-          `${e.name},${e.role},${e.department},${e.mobile},${e.joiningDate},${e.email},${e.gender},${e.address},${e.status},${e.location},${e.degree},${e.salary},${e.lastPromotionDate}`
+          `${e.name},${e.role},${e.department},${e.mobile},${e.joiningDate},${e.email},${e.gender},${e.address},${e.status},${e.location},${e.project},${e.degree},${e.salary},${e.lastPromotionDate}`
         ),
       ].join("\n");
 
@@ -237,7 +243,7 @@ const EmployeeManagement = () => {
           </div>
         </div>
 
-        {/* Updated Grid for Responsive Cards */}
+        {/* Employee Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredEmployees.length ? (
             filteredEmployees.map((emp) => (
@@ -258,15 +264,10 @@ const EmployeeManagement = () => {
                   <p><strong>Email:</strong> <span className="break-words">{emp.email}</span></p>
                 </div>
                 <div className="flex justify-center flex-wrap gap-2 mt-3">
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      emp.gender === "Female" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"
-                    }`}
-                  >
-                    {emp.gender}
-                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${emp.gender === "Female" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"}`}>{emp.gender}</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">{emp.status}</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">{emp.location}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-medium">{emp.project}</span>
                 </div>
                 <div className="flex justify-center mt-4 gap-4">
                   <button
@@ -289,7 +290,7 @@ const EmployeeManagement = () => {
           )}
         </div>
 
-        {/* Modal for Editing and Adding Employees */}
+        {/* Modal */}
         {(isModalOpen || isAddModalOpen) && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
@@ -306,14 +307,14 @@ const EmployeeManagement = () => {
                     className="w-full"
                   />
                 </div>
-                {[
-                  { name: "name", label: "Name" },
+                {[{ name: "name", label: "Name" },
                   { name: "role", label: "Role" },
                   { name: "department", label: "Department" },
                   { name: "mobile", label: "Mobile" },
                   { name: "email", label: "Email" },
                   { name: "degree", label: "Degree" },
                   { name: "salary", label: "Salary", type: "number" },
+                  { name: "project", label: "Project" }
                 ].map(({ name, label, type = "text" }) => (
                   <div key={name}>
                     <label className="block text-sm font-medium">{label}</label>

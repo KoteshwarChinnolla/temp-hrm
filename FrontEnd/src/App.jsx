@@ -37,7 +37,9 @@ import PayEmp from "./components/PayEmp";
 import AdminTraining from "./components/AdminTraining";
 import EmpTraining from "./components/Courses";
 import Shifts from "./components/Shifts";
-import ShiftsAd from "./components/ShiftsAd";
+import Assigntask from "./components/Assigntask";
+import TeamLeadLeaveReq from "./components/TeamLeadLeaveReq";
+import Shiftplanning from "./components/Shiftplanning";
 
 export default function App() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -64,8 +66,10 @@ export default function App() {
               <div className="flex flex-1 overflow-hidden">
                 {role === "Admin" ? (
                   <AdminSidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
-                ) : (
-                  <EmployeeSidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+                ) :  role === "Team Lead" ?(
+                  <EmployeeSidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} isTeamLead={true}/>
+                ):(
+                  <EmployeeSidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} isTeamLead={false}/>
                 )}
                 <main className="flex-1 p-4 overflow-auto bg-[#ecf0f4]">
                   <Routes>
@@ -88,7 +92,9 @@ export default function App() {
                     <Route path="/training" element={<AdminTraining />} />
                     <Route path="/trainings" element={<EmpTraining />} />
                     <Route path="/shifts" element={<Shifts />} />
-                    <Route path="/shiftad" element={<ShiftsAd />} />
+                    <Route path="/shiftad" element={<Shiftplanning />} />
+                    <Route path="/teamleadleavereq" element={<TeamLeadLeaveReq/>} />
+                    
                   
                     <Route path="/project/details" element={<ProjectDetails />} />
                     <Route path="/employees/all" element={<EmployeeManagement />} />
@@ -99,6 +105,7 @@ export default function App() {
                     <Route path="/payroll" element={<Payroll />} />
                     <Route path="/departments" element={<Departments />} />
                     <Route path="/reports" element={<LeaveReport />} />
+                    <Route path="/assign" element={<Assigntask />} />
                   </Routes>
                 </main>
               </div>
